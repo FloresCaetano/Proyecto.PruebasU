@@ -1,64 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1763415237064" clover="3.2.0">
-  <project timestamp="1763415237064" name="All files">
-    <metrics statements="145" coveredstatements="118" conditionals="105" coveredconditionals="72" methods="26" coveredmethods="18" elements="276" coveredelements="208" complexity="0" loc="145" ncloc="145" packages="3" files="7" classes="7"/>
+<coverage generated="1763415498888" clover="3.2.0">
+  <project timestamp="1763415498888" name="All files">
+    <metrics statements="144" coveredstatements="138" conditionals="103" coveredconditionals="85" methods="25" coveredmethods="23" elements="272" coveredelements="246" complexity="0" loc="144" ncloc="144" packages="3" files="7" classes="7"/>
     <package name="src">
-      <metrics statements="26" coveredstatements="21" conditionals="8" coveredconditionals="3" methods="4" coveredmethods="2"/>
+      <metrics statements="25" coveredstatements="21" conditionals="6" coveredconditionals="2" methods="3" coveredmethods="1"/>
       <file name="app.js" path="C:\Users\Mateo\Desktop\Trabajos Universidad\Pruebas_De_Software\PROYECTO\Proyecto.PruebasU1\Backend\src\app.js">
-        <metrics statements="26" coveredstatements="21" conditionals="8" coveredconditionals="3" methods="4" coveredmethods="2"/>
+        <metrics statements="25" coveredstatements="21" conditionals="6" coveredconditionals="2" methods="3" coveredmethods="1"/>
         <line num="1" count="3" type="stmt"/>
         <line num="3" count="3" type="stmt"/>
         <line num="4" count="3" type="stmt"/>
         <line num="5" count="3" type="stmt"/>
         <line num="7" count="3" type="stmt"/>
-        <line num="11" count="3" type="cond" truecount="1" falsecount="1"/>
-        <line num="12" count="0" type="stmt"/>
-        <line num="14" count="3" type="stmt"/>
-        <line num="15" count="49" type="stmt"/>
+        <line num="10" count="3" type="stmt"/>
+        <line num="11" count="49" type="stmt"/>
+        <line num="12" count="49" type="stmt"/>
+        <line num="13" count="49" type="stmt"/>
+        <line num="15" count="49" type="cond" truecount="1" falsecount="1"/>
         <line num="16" count="49" type="stmt"/>
-        <line num="17" count="49" type="stmt"/>
-        <line num="19" count="49" type="cond" truecount="1" falsecount="1"/>
-        <line num="20" count="49" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="22" count="3" type="stmt"/>
+        <line num="23" count="3" type="stmt"/>
         <line num="24" count="3" type="stmt"/>
+        <line num="25" count="3" type="stmt"/>
+        <line num="26" count="3" type="stmt"/>
         <line num="27" count="3" type="stmt"/>
-        <line num="29" count="3" type="stmt"/>
-        <line num="31" count="3" type="stmt"/>
-        <line num="34" count="3" type="stmt"/>
-        <line num="35" count="7" type="stmt"/>
-        <line num="39" count="3" type="stmt"/>
-        <line num="40" count="0" type="stmt"/>
-        <line num="44" count="3" type="cond" truecount="1" falsecount="1"/>
-        <line num="45" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="46" count="0" type="stmt"/>
-        <line num="47" count="0" type="stmt"/>
-        <line num="51" count="3" type="stmt"/>
+        <line num="30" count="3" type="stmt"/>
+        <line num="31" count="0" type="stmt"/>
+        <line num="35" count="3" type="cond" truecount="1" falsecount="1"/>
+        <line num="36" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="37" count="0" type="stmt"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="42" count="3" type="stmt"/>
       </file>
     </package>
     <package name="src.controllers">
-      <metrics statements="94" coveredstatements="72" conditionals="97" coveredconditionals="69" methods="22" coveredmethods="16"/>
+      <metrics statements="94" coveredstatements="92" conditionals="97" coveredconditionals="83" methods="22" coveredmethods="22"/>
       <file name="auto.controller.js" path="C:\Users\Mateo\Desktop\Trabajos Universidad\Pruebas_De_Software\PROYECTO\Proyecto.PruebasU1\Backend\src\controllers\auto.controller.js">
-        <metrics statements="24" coveredstatements="2" conditionals="21" coveredconditionals="0" methods="6" coveredmethods="0"/>
+        <metrics statements="24" coveredstatements="22" conditionals="21" coveredconditionals="14" methods="6" coveredmethods="6"/>
         <line num="12" count="3" type="stmt"/>
-        <line num="16" count="0" type="stmt"/>
-        <line num="21" count="0" type="stmt"/>
-        <line num="24" count="0" type="cond" truecount="0" falsecount="7"/>
-        <line num="25" count="0" type="stmt"/>
-        <line num="29" count="0" type="stmt"/>
-        <line num="39" count="0" type="stmt"/>
-        <line num="42" count="0" type="stmt"/>
-        <line num="47" count="0" type="stmt"/>
-        <line num="48" count="0" type="stmt"/>
-        <line num="50" count="0" type="stmt"/>
-        <line num="51" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="53" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="54" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="55" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="56" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="57" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="59" count="0" type="stmt"/>
-        <line num="64" count="0" type="stmt"/>
-        <line num="66" count="0" type="stmt"/>
-        <line num="67" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="21" count="4" type="stmt"/>
+        <line num="24" count="4" type="cond" truecount="7" falsecount="0"/>
+        <line num="25" count="1" type="stmt"/>
+        <line num="29" count="3" type="stmt"/>
+        <line num="39" count="3" type="stmt"/>
+        <line num="42" count="3" type="stmt"/>
+        <line num="47" count="1" type="stmt"/>
+        <line num="48" count="1" type="stmt"/>
+        <line num="50" count="2" type="stmt"/>
+        <line num="51" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="53" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="54" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="55" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="56" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="57" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="59" count="1" type="stmt"/>
+        <line num="64" count="1" type="stmt"/>
+        <line num="66" count="3" type="stmt"/>
+        <line num="67" count="1" type="cond" truecount="1" falsecount="1"/>
         <line num="69" count="0" type="stmt"/>
         <line num="71" count="0" type="stmt"/>
         <line num="74" count="3" type="stmt"/>
