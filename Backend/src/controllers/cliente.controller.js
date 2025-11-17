@@ -4,24 +4,32 @@ function getAllClientes(req, res) {
     res.json(clientes);
 }
 
+function validateClienteData(data) {
+    const { nombre, email, telefono, direccion, ciudad } = data;
+    
+    if (!nombre || !email || !telefono || !direccion || !ciudad) {
+        return 'Nombre, Email, Teléfono, Dirección y Ciudad son requeridos';
+    }
+    
+    if (nombre.trim() === '' || email.trim() === '' || telefono.trim() === '' || 
+        direccion.trim() === '' || ciudad.trim() === '') {
+        return 'Los campos no pueden estar vacíos o contener solo espacios';
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return 'El email no tiene un formato válido';
+    }
+    
+    return null;
+}
+
 function addNewCliente(req, res) {
     const { nombre, email, telefono, direccion, ciudad } = req.body;
     
-    // Validación de campos requeridos
-    if (!nombre || !email || !telefono || !direccion || !ciudad) {
-        return res.status(400).json({ message: 'Nombre, Email, Teléfono, Dirección y Ciudad son requeridos' });
-    }
-    
-    // Validación de campos vacíos (solo espacios)
-    if (nombre.trim() === '' || email.trim() === '' || telefono.trim() === '' || 
-        direccion.trim() === '' || ciudad.trim() === '') {
-        return res.status(400).json({ message: 'Los campos no pueden estar vacíos o contener solo espacios' });
-    }
-    
-    // Validación de formato de email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        return res.status(400).json({ message: 'El email no tiene un formato válido' });
+    const error = validateClienteData(req.body);
+    if (error) {
+        return res.status(400).json({ message: error });
     }
     
     const newCliente = {

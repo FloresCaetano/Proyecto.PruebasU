@@ -15,28 +15,32 @@ function getAllConcesionarias(req, res) {
     res.json(concesionarias);
 }
 
+function validateConcesionariaData(data) {
+    const { nombre, direccion, telefono, ciudad, gerente } = data;
+
+    if (!nombre || !direccion || !telefono || !ciudad || !gerente) {
+        return 'Nombre, Dirección, Teléfono, Ciudad y Gerente son requeridos';
+    }
+
+    if (nombre.trim() === '' || direccion.trim() === '' || telefono.trim() === '' || 
+        ciudad.trim() === '' || gerente.trim() === '') {
+        return 'Los campos no pueden estar vacíos o contener solo espacios';
+    }
+
+    return null;
+}
+
 // POST - Crear una nueva concesionaria
 function addNewConcesionaria(req, res) {
     const { nombre, direccion, telefono, ciudad, gerente } = req.body;
 
-    // Validación básica de entrada
-    if (!nombre || !direccion || !telefono || !ciudad || !gerente) {
-        return res.status(400).json({ 
-            message: 'Nombre, Dirección, Teléfono, Ciudad y Gerente son requeridos' 
-        });
+    const error = validateConcesionariaData(req.body);
+    if (error) {
+        return res.status(400).json({ message: error });
     }
 
-    // Validación de campos vacíos (solo espacios)
-    if (nombre.trim() === '' || direccion.trim() === '' || telefono.trim() === '' || 
-        ciudad.trim() === '' || gerente.trim() === '') {
-        return res.status(400).json({ 
-            message: 'Los campos no pueden estar vacíos o contener solo espacios' 
-        });
-    }
-
-    // Creamos un objeto concesionaria
     const newConcesionaria = {
-        id: Date.now(), // ID usando Date.now()
+        id: Date.now(),
         nombre,
         direccion,
         telefono,
@@ -44,10 +48,7 @@ function addNewConcesionaria(req, res) {
         gerente
     };
 
-    // Lo añadimos al arreglo de concesionarias
     concesionarias.push(newConcesionaria);
-
-    // Respondemos con la concesionaria creada
     res.status(201).json(newConcesionaria);
 }
 

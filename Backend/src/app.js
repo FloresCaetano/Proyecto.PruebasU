@@ -1,5 +1,4 @@
 const express = require('express');
-let corsPkg;
 const autoRoutes = require('./routes/auto.routes');
 const vendorRoutes = require('./routes/vendor.route');
 const clienteRoutes = require('./routes/cliente.routes');
@@ -35,11 +34,13 @@ app.use((req, res) => {
 });
 
 // iniciar servidor si se ejecuta con `node app.js`
+/* eslint-disable no-undef, no-console */
 if (require.main === module) {
     const port = process.env.PORT || 3000;
     app.listen(port, () => {
         console.log(`Servidor backend escuchando en http://localhost:${port}`);
     });
 }
+/* eslint-enable no-undef, no-console */
 
 module.exports = app;
