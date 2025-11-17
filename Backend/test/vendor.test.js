@@ -11,7 +11,7 @@ describe('API CRUD de Vendedores (/api/vendedores)', () => {
     email: 'ana.garcia@concesionaria.com',
     telefono: '0987654321',
     comision: 20,
-    especialidad: 'Autos Usados'
+    codigoEmpleado: 'EMP-123'
   };
 
   // 1. POST creación válida
@@ -48,7 +48,7 @@ describe('API CRUD de Vendedores (/api/vendedores)', () => {
   test('PUT /:id -> debe actualizar un vendedor', async () => {
     const updatedData = {
       name: 'Ana G. Actualizada',
-      especialidad: 'Gerente'
+      codigoEmpleado: 'EMP-999'
     };
 
     const res = await request(app)
@@ -57,7 +57,7 @@ describe('API CRUD de Vendedores (/api/vendedores)', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body.name).toBe(updatedData.name);
-    expect(res.body.especialidad).toBe(updatedData.especialidad);
+    expect(res.body.codigoEmpleado).toBe(updatedData.codigoEmpleado);
   });
 
   // 5. DELETE eliminación válida
@@ -210,8 +210,8 @@ describe('API CRUD de Vendedores (/api/vendedores)', () => {
 
     expect(res.statusCode).toBe(409);
   });
-
-    // 17. PUT -> vendedor no existe
+  
+  // 17. PUT -> vendedor no existe
   test('PUT /:id -> debe devolver 404 si el vendedor no existe', async () => {
     const res = await request(app)
       .put('/api/vendedores/999999')
@@ -227,7 +227,8 @@ describe('API CRUD de Vendedores (/api/vendedores)', () => {
         name: "PUT Tester",
         email: "put@test.com",
         telefono: "1234567",
-        comision: 10
+        comision: 10,
+        codigoEmpleado: "EMP-PUT"
       });
 
     expect(res.statusCode).toBe(201);
@@ -261,9 +262,9 @@ describe('API CRUD de Vendedores (/api/vendedores)', () => {
     expect(res.statusCode).toBe(400);
   });
 
-  // 21. PUT -> email duplicado en otro vendedor
+  // 21. PUT -> email duplicado
   test('PUT /:id -> debe fallar si el email ya pertenece a otro vendedor', async () => {
-    const v2 = await request(app)
+    await request(app)
       .post('/api/vendedores')
       .send({
         name: "Duplicado PUT",
@@ -285,7 +286,7 @@ describe('API CRUD de Vendedores (/api/vendedores)', () => {
     expect(res.statusCode).toBe(404);
   });
 
-  // 23. GET ALL -> debe devolver arreglo vacío si no hay vendedores (prueba final)
+  // 23. GET ALL -> debe devolver arreglo vacío si no hay vendedores
   test('GET / -> si no hay vendedores debe devolver []', async () => {
     const all = await request(app).get('/api/vendedores');
 
@@ -299,7 +300,7 @@ describe('API CRUD de Vendedores (/api/vendedores)', () => {
     expect(res.body).toEqual([]);
   });
 
-  // 24. PUT -> no enviar name debe mantener el anterior
+  // 24. PUT -> si no se envía name, se mantiene el anterior
   test('PUT /:id -> si no se envía name debe mantenerse el existente', async () => {
     const resCreate = await request(app)
       .post('/api/vendedores')
@@ -308,7 +309,7 @@ describe('API CRUD de Vendedores (/api/vendedores)', () => {
         email: "no-name@test.com",
         telefono: "1234567",
         comision: 10,
-        especialidad: "Original"
+        codigoEmpleado: "EMP-ORIG"
       });
 
     const vid = resCreate.body.id;
@@ -316,25 +317,24 @@ describe('API CRUD de Vendedores (/api/vendedores)', () => {
     const resUpdate = await request(app)
       .put(`/api/vendedores/${vid}`)
       .send({
-        especialidad: "Nueva Especialidad"
+        codigoEmpleado: "EMP-NEW"
       });
 
     expect(resUpdate.statusCode).toBe(200);
-    expect(resUpdate.body.name).toBe("Nombre Original");  
-    expect(resUpdate.body.especialidad).toBe("Nueva Especialidad");
+    expect(resUpdate.body.name).toBe("Nombre Original");
+    expect(resUpdate.body.codigoEmpleado).toBe("EMP-NEW");
   });
 
-
-  // 25. PUT -> no enviar especialidad debe mantener la anterior
-  test('PUT /:id -> si no se envía especialidad debe mantenerse la existente', async () => {
+  // 25. PUT -> si no se envía codigoEmpleado mantiene el anterior
+  test('PUT /:id -> si no se envía codigoEmpleado debe mantenerse el existente', async () => {
     const resCreate = await request(app)
       .post('/api/vendedores')
       .send({
-        name: "Para Especialidad",
-        email: "no-especialidad@test.com",
+        name: "Para Codigo",
+        email: "no-code@test.com",
         telefono: "1234567",
         comision: 10,
-        especialidad: "Especialidad Original"
+        codigoEmpleado: "EMP-345"
       });
 
     const vid = resCreate.body.id;
@@ -346,9 +346,8 @@ describe('API CRUD de Vendedores (/api/vendedores)', () => {
       });
 
     expect(resUpdate.statusCode).toBe(200);
-    expect(resUpdate.body.especialidad).toBe("Especialidad Original");
+    expect(resUpdate.body.codigoEmpleado).toBe("EMP-345");
     expect(resUpdate.body.name).toBe("Nuevo Nombre");
   });
-
 
 });
