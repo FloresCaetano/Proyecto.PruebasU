@@ -72,11 +72,11 @@ function EmpleadoDetalle({ detalle }) {
 		clientes: {
 			endpoint: "clientes",
 			fields: [
-				{ name: "nombreCompleto", label: "Nombre Completo", required: true },
+				{ name: "nombre", label: "Nombre", required: true },
 				{ name: "email", label: "Email", required: true },
 				{ name: "telefono", label: "Teléfono", required: true },
 				{ name: "direccion", label: "Dirección", required: true },
-				{ name: "dni", label: "DNI", required: true }
+				{ name: "ciudad", label: "Ciudad", required: true }
 			]
 		},
 		vendedores: {
@@ -329,7 +329,7 @@ function EmpleadoDetalle({ detalle }) {
 					Autos
 				</button>
 				<button className="nav-btn" onClick={() => setModo("clientes")} disabled={modo === "clientes"}>
-					Clientes (próximo)
+					Clientes
 				</button>
 				<button className="nav-btn" onClick={() => setModo("vendedores")} disabled={modo === "vendedores"}>
 					Vendedores (próximo)
@@ -423,7 +423,70 @@ function EmpleadoDetalle({ detalle }) {
 				</div>
 			)}
 
-			{modo !== "autos" && (
+			{modo === "clientes" && (
+				<div>
+					<section className="panel-section">
+						<h3 className="section-heading">{entidadForm.id ? "Editar Cliente" : "Crear Cliente"}</h3>
+						{error && <div className="error">{error}</div>}
+						<form onSubmit={handleEntidadSubmit}>
+							{entidadConfigs.clientes.fields.map(field => (
+								<div className="form-row" key={field.name}>
+									<label>{field.label}:</label>
+									<input
+										className="input"
+										name={field.name}
+										type={field.name === "email" ? "email" : "text"}
+										value={entidadForm[field.name] || ""}
+										onChange={handleEntidadChange}
+										required={field.required}
+									/>
+								</div>
+							))}
+							<div className="form-actions">
+								<button className="btn" type="submit">{entidadForm.id ? "Actualizar" : "Crear"}</button>
+								<button className="btn secondary" type="button" onClick={resetEntidadForm}>Limpiar</button>
+							</div>
+						</form>
+					</section>
+
+					<section className="panel-section">
+						<h3 className="section-heading">Listado de Clientes</h3>
+						{loading ? <p>Cargando...</p> : items.length === 0 ? <p>No hay clientes registrados.</p> : (
+							<table className="panel-table">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Nombre</th>
+										<th>Email</th>
+										<th>Teléfono</th>
+										<th>Dirección</th>
+										<th>Ciudad</th>
+										<th>Acciones</th>
+									</tr>
+								</thead>
+								<tbody>
+									{items.map(item => (
+										<tr key={item.id ?? item._id}>
+											<td>{item.id ?? item._id}</td>
+											<td>{item.nombre}</td>
+											<td>{item.email}</td>
+											<td>{item.telefono}</td>
+											<td>{item.direccion}</td>
+											<td>{item.ciudad}</td>
+											<td>
+												<button className="action-btn edit" onClick={() => handleEntidadEdit(item)}>Editar</button>
+												<button className="action-btn delete" onClick={() => handleEntidadDelete(item.id ?? item._id)}>Borrar</button>
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						)}
+					</section>
+				</div>
+			)}
+
+			{modo !== "autos" && modo !== "clientes" && (
 				<div style={{ marginTop: "1rem", padding: "1rem", background: "#fffbe6", borderRadius: 6 }}>
 					<h3>{modo.charAt(0).toUpperCase() + modo.slice(1)}</h3>
 					<p>Interfaz para {modo} no implementada aún. Se añadirá en futuras iteraciones.</p>

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Pruebas Software Proyecto P1",
   "scripts": {
+    "start": "node app.js",
     "test": "jest",
     "test-coverage": "jest --coverage",
     "lint": "eslint",

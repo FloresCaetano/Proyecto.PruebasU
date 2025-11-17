@@ -1,18 +1,6 @@
-const express = require('express');
-const autoRoutes = require('./src/routes/auto.routes');
+const app = require('./src/app');
 
-const app = express(); // Crea una instancia de la aplicación Express
-
-// Middleware para parsear JSON del cuerpo de las solicitudes
-app.use(express.json());
-
-// Rutas Base de cada modelo
-app.use('/api/autos', autoRoutes);
-
-// Manejador de rutas no encontradas (404)
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Servidor backend escuchando en http://localhost:${port}`);
 });
-
-// Exportamos app para poder usarla en tests o en un archivo de servidor separado
-module.exports = app;
