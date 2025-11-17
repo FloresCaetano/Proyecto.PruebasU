@@ -1,20 +1,50 @@
 let vendedores = [];
-let nextId = 1;
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const phoneRegex = /^[0-9]{7,15}$/;
 
+// POST: Crear vendedor
 function createVendor(req, res) {
-  const { name, email, codigoEmpleado, especialidad } = req.body;
+  const { name, email, telefono, comision, especialidad } = req.body;
 
-  if (!name || !email) {
-    return res.status(400).json({ message: 'El nombre y el email son requeridos' });
+  // Validación básica de entradas
+  if (!name || !email || !telefono || comision === undefined) {
+    return res.status(400).json({
+      message: 'Nombre, Email, Teléfono y Comisión son requeridos',
+    });
+  }
+
+  // Validación formato de correo
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: 'El email no es válido' });
+  }
+
+  // Validación teléfono
+  if (!phoneRegex.test(telefono)) {
+    return res.status(400).json({
+      message: 'El teléfono debe contener solo números y tener entre 7 y 15 dígitos',
+    });
+  }
+
+  // Validación comisión del vendedor
+  if (isNaN(comision) || comision < 0 || comision > 100) {
+    return res.status(400).json({
+      message: 'La comisión debe ser un número entre 0 y 100',
+    });
+  }
+
+  // Evitar correos duplicados
+  if (vendedores.some(v => v.email === email)) {
+    return res.status(409).json({ message: 'El email ya está registrado' });
   }
 
   const newVendedor = {
-    id: nextId++,
+    id: Date.now(),
     name,
     email,
-    codigoEmpleado: codigoEmpleado || null, 
-    especialidad: especialidad || 'General', 
+    telefono,
+    comision,
+    especialidad: especialidad || 'General',
   };
 
   vendedores.push(newVendedor);
@@ -22,12 +52,14 @@ function createVendor(req, res) {
   res.status(201).json(newVendedor);
 }
 
+// GET: obtener todos los vendedores
 function getAllVendors(req, res) {
   res.json(vendedores);
 }
 
+// GET: obtener un vendedor por ID
 function getVendorById(req, res) {
-  const id = parseInt(req.params.id);
+  const id = Number(req.params.id);
   const vendedor = vendedores.find(v => v.id === id);
 
   if (!vendedor) {
@@ -37,40 +69,61 @@ function getVendorById(req, res) {
   res.json(vendedor);
 }
 
-
+// PUT: actualizar vendedor
 function updateVendor(req, res) {
   const id = parseInt(req.params.id);
-  const { name, email, codigoEmpleado, especialidad } = req.body;
+  const { name, email, telefono, comision, especialidad } = req.body;
 
-  const vendorIndex = vendedores.findIndex(v => v.id === id);
-
-  if (vendorIndex === -1) {
+  const index = vendedores.findIndex(v => v.id === id);
+  if (index === -1) {
     return res.status(404).json({ message: 'Vendedor no encontrado' });
   }
 
-  const updatedVendedor = {
-    ...vendedores[vendorIndex],
-    name: name || vendedores[vendorIndex].name,
-    email: email || vendedores[vendorIndex].email,
-    codigoEmpleado: codigoEmpleado || vendedores[vendorIndex].codigoEmpleado,
-    especialidad: especialidad || vendedores[vendorIndex].especialidad,
+  const vendedor = vendedores[index];
+
+  // Validaciones opcionales
+  if (email !== undefined && !emailRegex.test(email)) {
+    return res.status(400).json({ message: 'El email no es válido' });
+  }
+
+  if (telefono !== undefined && !phoneRegex.test(telefono)) {
+    return res.status(400).json({
+      message: 'El teléfono debe contener solo números y tener entre 7 y 15 dígitos',
+    });
+  }
+
+  if (comision !== undefined && (isNaN(comision) || comision < 0 || comision > 100)) {
+    return res.status(400).json({
+      message: 'La comisión debe ser un número entre 0 y 100',
+    });
+  }
+
+  if (email !== undefined && vendedores.some(v => v.email === email && v.id !== id)) {
+    return res.status(409).json({ message: 'El email ya está registrado por otro vendedor' });
+  }
+
+  vendedores[index] = {
+    ...vendedor,
+    name: name ?? vendedor.name,
+    email: email ?? vendedor.email,
+    telefono: telefono ?? vendedor.telefono,
+    comision: comision ?? vendedor.comision,
+    especialidad: especialidad ?? vendedor.especialidad,
   };
 
-  vendedores[vendorIndex] = updatedVendedor;
-
-  res.json(updatedVendedor);
+  res.json(vendedores[index]);
 }
 
+// DELETE: eliminar vendedor
 function deleteVendor(req, res) {
   const id = parseInt(req.params.id);
-  const vendorIndex = vendedores.findIndex(v => v.id === id);
+  const index = vendedores.findIndex(v => v.id === id);
 
-  if (vendorIndex === -1) {
+  if (index === -1) {
     return res.status(404).json({ message: 'Vendedor no encontrado' });
   }
 
-  vendedores.splice(vendorIndex, 1);
-
+  vendedores.splice(index, 1);
   res.status(200).json({ message: 'Vendedor eliminado exitosamente' });
 }
 

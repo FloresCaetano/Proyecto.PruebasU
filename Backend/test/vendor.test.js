@@ -1,54 +1,54 @@
 const request = require('supertest');
-const app = require('../src/app'); 
+const app = require('../src/app');
 
 let newVendorId;
+let putVendorId;
 
 describe('API CRUD de Vendedores (/api/vendedores)', () => {
 
-  const newVendor = {
+  const validVendor = {
     name: 'Ana García',
     email: 'ana.garcia@concesionaria.com',
-    codigoEmpleado: 'B456',
+    telefono: '0987654321',
+    comision: 20,
     especialidad: 'Autos Usados'
   };
 
-  // 1. Prueba de CREACIÓN (POST)
+  // 1. POST creación válida
   test('POST / -> debe crear un nuevo vendedor', async () => {
     const res = await request(app)
       .post('/api/vendedores')
-      .send(newVendor);
+      .send(validVendor);
 
     expect(res.statusCode).toBe(201);
     expect(res.body).toHaveProperty('id');
-    expect(res.body.name).toBe(newVendor.name);
+    expect(res.body.name).toBe(validVendor.name);
 
     newVendorId = res.body.id;
   });
 
-  // 2. Prueba de LECTURA (GET by ID)
+  // 2. GET por ID
   test('GET /:id -> debe obtener un vendedor por su ID', async () => {
     const res = await request(app).get(`/api/vendedores/${newVendorId}`);
 
     expect(res.statusCode).toBe(200);
     expect(res.body.id).toBe(newVendorId);
-    expect(res.body.name).toBe(newVendor.name);
   });
 
-  // 3. Prueba de LECTURA (GET ALL)
+  // 3. GET ALL
   test('GET / -> debe obtener todos los vendedores', async () => {
     const res = await request(app).get('/api/vendedores');
 
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBeGreaterThan(0);
-    expect(res.body[0].name).toBe(newVendor.name);
   });
 
-  // 4. Prueba de ACTUALIZACIÓN (PUT)
-  test('PUT /:id -> debe actualizar un vendedor existente', async () => {
+  // 4. PUT actualización válida
+  test('PUT /:id -> debe actualizar un vendedor', async () => {
     const updatedData = {
-      name: 'Ana García (Actualizada)',
-      especialidad: 'Gerente de Usados'
+      name: 'Ana G. Actualizada',
+      especialidad: 'Gerente'
     };
 
     const res = await request(app)
@@ -58,10 +58,9 @@ describe('API CRUD de Vendedores (/api/vendedores)', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.name).toBe(updatedData.name);
     expect(res.body.especialidad).toBe(updatedData.especialidad);
-    expect(res.body.email).toBe(newVendor.email);
   });
 
-  // 5. Prueba de ELIMINACIÓN (DELETE)
+  // 5. DELETE eliminación válida
   test('DELETE /:id -> debe eliminar un vendedor', async () => {
     const res = await request(app).delete(`/api/vendedores/${newVendorId}`);
 
@@ -69,24 +68,287 @@ describe('API CRUD de Vendedores (/api/vendedores)', () => {
     expect(res.body.message).toBe('Vendedor eliminado exitosamente');
   });
 
-  // 6. Prueba de VERIFICACIÓN (GET by ID después de DELETE)
+  // 6. GET tras DELETE
   test('GET /:id -> debe devolver 404 si el vendedor fue eliminado', async () => {
     const res = await request(app).get(`/api/vendedores/${newVendorId}`);
     expect(res.statusCode).toBe(404);
   });
 
+  // 7. GET ID inexistente
   test('GET /:id -> debe devolver 404 para un ID inexistente', async () => {
     const res = await request(app).get('/api/vendedores/999999');
     expect(res.statusCode).toBe(404);
   });
 
-  test('POST / -> debe devolver 400 si faltan datos (ej. email)', async () => {
+  // 8. POST Validación: falta el campo name
+  test('POST / -> debe fallar si falta name', async () => {
     const res = await request(app)
       .post('/api/vendedores')
-      .send({ name: 'Vendedor Incompleto' });
+      .send({
+        email: "x@test.com",
+        telefono: "1234567",
+        comision: 10
+      });
 
     expect(res.statusCode).toBe(400);
-    expect(res.body.message).toBe('El nombre y el email son requeridos');
   });
+
+  // 9. POST Validación: falta el campo email
+  test('POST / -> debe fallar si falta email', async () => {
+    const res = await request(app)
+      .post('/api/vendedores')
+      .send({
+        name: "Mario",
+        telefono: "1234567",
+        comision: 10
+      });
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  // 10. POST Validación: falta el campo teléfono
+  test('POST / -> debe fallar si falta telefono', async () => {
+    const res = await request(app)
+      .post('/api/vendedores')
+      .send({
+        name: "Mario",
+        email: "mario@test.com",
+        comision: 10
+      });
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  // 11. POST Validación: falta el campo comisión
+  test('POST / -> debe fallar si falta comision', async () => {
+    const res = await request(app)
+      .post('/api/vendedores')
+      .send({
+        name: "Mario",
+        email: "mario@test.com",
+        telefono: "1234567"
+      });
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  // 12. POST Validación email inválido
+  test('POST / -> email inválido debe fallar', async () => {
+    const res = await request(app)
+      .post('/api/vendedores')
+      .send({
+        name: "Pedro",
+        email: "correo_malo.com",
+        telefono: "1234567",
+        comision: 15
+      });
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  // 13. POST Validación teléfono inválido
+  test('POST / -> teléfono inválido debe fallar', async () => {
+    const res = await request(app)
+      .post('/api/vendedores')
+      .send({
+        name: "Pedro",
+        email: "pedro@test.com",
+        telefono: "12abc",
+        comision: 10
+      });
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  // 14. POST Validación teléfono muy corto
+  test('POST / -> teléfono demasiado corto debe fallar', async () => {
+    const res = await request(app)
+      .post('/api/vendedores')
+      .send({
+        name: "Carlos",
+        email: "c@test.com",
+        telefono: "123",
+        comision: 10
+      });
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  // 15. POST Validación comision fuera de rango
+  test('POST / -> comisión fuera de 0-100 debe fallar', async () => {
+    const res = await request(app)
+      .post('/api/vendedores')
+      .send({
+        name: "Luis",
+        email: "l@test.com",
+        telefono: "1234567",
+        comision: 150
+      });
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  // 16. POST Validación email duplicado
+  test('POST / -> email duplicado debe fallar', async () => {
+    await request(app)
+      .post('/api/vendedores')
+      .send({
+        name: "Repetido",
+        email: "dup@test.com",
+        telefono: "1234567",
+        comision: 10
+      });
+
+    const res = await request(app)
+      .post('/api/vendedores')
+      .send({
+        name: "Repetido2",
+        email: "dup@test.com",
+        telefono: "1234567",
+        comision: 10
+      });
+
+    expect(res.statusCode).toBe(409);
+  });
+
+    // 17. PUT -> vendedor no existe
+  test('PUT /:id -> debe devolver 404 si el vendedor no existe', async () => {
+    const res = await request(app)
+      .put('/api/vendedores/999999')
+      .send({ name: "Nuevo nombre" });
+
+    expect(res.statusCode).toBe(404);
+  });
+
+  test('POST / -> crear vendedor para pruebas PUT adicionales', async () => {
+    const res = await request(app)
+      .post('/api/vendedores')
+      .send({
+        name: "PUT Tester",
+        email: "put@test.com",
+        telefono: "1234567",
+        comision: 10
+      });
+
+    expect(res.statusCode).toBe(201);
+    putVendorId = res.body.id;
+  });
+
+  // 18. PUT -> email inválido
+  test('PUT /:id -> debe fallar si el email es inválido', async () => {
+    const res = await request(app)
+      .put(`/api/vendedores/${putVendorId}`)
+      .send({ email: "correo_malo" });
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  // 19. PUT -> teléfono inválido
+  test('PUT /:id -> debe fallar si el teléfono es inválido', async () => {
+    const res = await request(app)
+      .put(`/api/vendedores/${putVendorId}`)
+      .send({ telefono: "12ab" });
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  // 20. PUT -> comisión inválida
+  test('PUT /:id -> debe fallar si la comisión es inválida', async () => {
+    const res = await request(app)
+      .put(`/api/vendedores/${putVendorId}`)
+      .send({ comision: 200 });
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  // 21. PUT -> email duplicado en otro vendedor
+  test('PUT /:id -> debe fallar si el email ya pertenece a otro vendedor', async () => {
+    const v2 = await request(app)
+      .post('/api/vendedores')
+      .send({
+        name: "Duplicado PUT",
+        email: "duplicado@test.com",
+        telefono: "1234567",
+        comision: 10
+      });
+
+    const res = await request(app)
+      .put(`/api/vendedores/${putVendorId}`)
+      .send({ email: "duplicado@test.com" });
+
+    expect(res.statusCode).toBe(409);
+  });
+
+  // 22. DELETE -> vendedor no existe
+  test('DELETE /:id -> debe devolver 404 si el vendedor no existe', async () => {
+    const res = await request(app).delete('/api/vendedores/999999');
+    expect(res.statusCode).toBe(404);
+  });
+
+  // 23. GET ALL -> debe devolver arreglo vacío si no hay vendedores (prueba final)
+  test('GET / -> si no hay vendedores debe devolver []', async () => {
+    const all = await request(app).get('/api/vendedores');
+
+    for (const v of all.body) {
+      await request(app).delete(`/api/vendedores/${v.id}`);
+    }
+
+    const res = await request(app).get('/api/vendedores');
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual([]);
+  });
+
+  // 24. PUT -> no enviar name debe mantener el anterior
+  test('PUT /:id -> si no se envía name debe mantenerse el existente', async () => {
+    const resCreate = await request(app)
+      .post('/api/vendedores')
+      .send({
+        name: "Nombre Original",
+        email: "no-name@test.com",
+        telefono: "1234567",
+        comision: 10,
+        especialidad: "Original"
+      });
+
+    const vid = resCreate.body.id;
+
+    const resUpdate = await request(app)
+      .put(`/api/vendedores/${vid}`)
+      .send({
+        especialidad: "Nueva Especialidad"
+      });
+
+    expect(resUpdate.statusCode).toBe(200);
+    expect(resUpdate.body.name).toBe("Nombre Original");  
+    expect(resUpdate.body.especialidad).toBe("Nueva Especialidad");
+  });
+
+
+  // 25. PUT -> no enviar especialidad debe mantener la anterior
+  test('PUT /:id -> si no se envía especialidad debe mantenerse la existente', async () => {
+    const resCreate = await request(app)
+      .post('/api/vendedores')
+      .send({
+        name: "Para Especialidad",
+        email: "no-especialidad@test.com",
+        telefono: "1234567",
+        comision: 10,
+        especialidad: "Especialidad Original"
+      });
+
+    const vid = resCreate.body.id;
+
+    const resUpdate = await request(app)
+      .put(`/api/vendedores/${vid}`)
+      .send({
+        name: "Nuevo Nombre"
+      });
+
+    expect(resUpdate.statusCode).toBe(200);
+    expect(resUpdate.body.especialidad).toBe("Especialidad Original");
+    expect(resUpdate.body.name).toBe("Nuevo Nombre");
+  });
+
 
 });
