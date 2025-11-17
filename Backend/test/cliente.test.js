@@ -75,4 +75,150 @@ describe('API de Clientes', () => {
     const res = await request(app).get('/api/clientes');
     expect(res.body.find(c => c.id === id)).toBeUndefined();
   });
+
+  // VALIDACIÓN DE FORMATO: Email inválido
+  test('POST /api/clientes debería rechazar email con formato inválido', async () => {
+    const clienteEmailInvalido = {
+      nombre: 'Pedro Gómez',
+      email: 'correo@invalido',
+      telefono: '0912345678',
+      direccion: 'Calle Falsa 123',
+      ciudad: 'Quito'
+    };
+
+    const res = await request(app).post('/api/clientes').send(clienteEmailInvalido);
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toHaveProperty('message', 'El email no tiene un formato válido');
+  });
+
+  // EDGE CASE: Actualizar cliente que no existe
+  test('PUT /api/clientes/:id debería retornar 404 si el cliente no existe', async () => {
+    const idInexistente = 999999;
+    const res = await request(app)
+      .put(`/api/clientes/${idInexistente}`)
+      .send({ telefono: '0999999999' });
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toHaveProperty('message', 'Cliente no encontrado');
+  });
+
+  // EDGE CASE: Eliminar cliente que no existe
+  test('DELETE /api/clientes/:id debería retornar 404 si el cliente no existe', async () => {
+    const idInexistente = 999999;
+    const res = await request(app).delete(`/api/clientes/${idInexistente}`);
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toHaveProperty('message', 'Cliente no encontrado');
+  });
+
+  // INTEGRIDAD DE DATOS: Actualización parcial
+  test('PUT /api/clientes/:id debería permitir actualización parcial de campos', async () => {
+    const cliente = {
+      nombre: 'Sofía Martínez',
+      email: 'sofia.martinez@email.com',
+      telefono: '0923456789',
+      direccion: 'Av. Central 321',
+      ciudad: 'Loja'
+    };
+
+    const creado = await request(app).post('/api/clientes').send(cliente);
+    const id = creado.body.id;
+
+    const actualizado = await request(app)
+      .put(`/api/clientes/${id}`)
+      .send({ ciudad: 'Ambato' });
+
+    expect(actualizado.statusCode).toBe(200);
+    expect(actualizado.body.ciudad).toBe('Ambato');
+    expect(actualizado.body.nombre).toBe('Sofía Martínez');
+    expect(actualizado.body.email).toBe('sofia.martinez@email.com');
+  });
+
+  // VALIDACIÓN: Campos con solo espacios
+  test('POST /api/clientes debería rechazar campos vacíos o con solo espacios', async () => {
+    const clienteInvalido = {
+      nombre: '   ',
+      email: 'test@email.com',
+      telefono: '0912345678',
+      direccion: 'Calle 123',
+      ciudad: 'Quito'
+    };
+
+    const res = await request(app).post('/api/clientes').send(clienteInvalido);
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toHaveProperty('message', 'Los campos no pueden estar vacíos o contener solo espacios');
+  });
+
+  // COBERTURA: Actualizar email específicamente
+  test('PUT /api/clientes/:id debería actualizar el email del cliente', async () => {
+    const cliente = {
+      nombre: 'Roberto García',
+      email: 'roberto.garcia@email.com',
+      telefono: '0912345678',
+      direccion: 'Calle Norte 111',
+      ciudad: 'Machala'
+    };
+
+    const creado = await request(app).post('/api/clientes').send(cliente);
+    const id = creado.body.id;
+
+    const actualizado = await request(app)
+      .put(`/api/clientes/${id}`)
+      .send({ email: 'nuevo.email@email.com' });
+
+    expect(actualizado.statusCode).toBe(200);
+    expect(actualizado.body.email).toBe('nuevo.email@email.com');
+    expect(actualizado.body.nombre).toBe('Roberto García');
+  });
+
+  // COBERTURA: Actualizar múltiples campos incluyendo ciudad
+  test('PUT /api/clientes/:id debería actualizar múltiples campos incluyendo ciudad', async () => {
+    const cliente = {
+      nombre: 'Patricia Morales',
+      email: 'patricia.morales@email.com',
+      telefono: '0998877665',
+      direccion: 'Av. Sur 222',
+      ciudad: 'Esmeraldas'
+    };
+
+    const creado = await request(app).post('/api/clientes').send(cliente);
+    const id = creado.body.id;
+
+    const actualizado = await request(app)
+      .put(`/api/clientes/${id}`)
+      .send({ 
+        email: 'patricia.new@email.com',
+        ciudad: 'Santo Domingo'
+      });
+
+    expect(actualizado.statusCode).toBe(200);
+    expect(actualizado.body.email).toBe('patricia.new@email.com');
+    expect(actualizado.body.ciudad).toBe('Santo Domingo');
+    expect(actualizado.body.nombre).toBe('Patricia Morales');
+  });
+
+  // COBERTURA: Actualizar todos los campos individualmente
+  test('PUT /api/clientes/:id debería actualizar nombre, dirección y ciudad', async () => {
+    const cliente = {
+      nombre: 'Luis Hernández',
+      email: 'luis@email.com',
+      telefono: '0987654321',
+      direccion: 'Calle Vieja 100',
+      ciudad: 'Ibarra'
+    };
+
+    const creado = await request(app).post('/api/clientes').send(cliente);
+    const id = creado.body.id;
+
+    const actualizado = await request(app)
+      .put(`/api/clientes/${id}`)
+      .send({ 
+        nombre: 'Luis Fernando Hernández',
+        direccion: 'Calle Nueva 200'
+      });
+
+    expect(actualizado.statusCode).toBe(200);
+    expect(actualizado.body.nombre).toBe('Luis Fernando Hernández');
+    expect(actualizado.body.direccion).toBe('Calle Nueva 200');
+  });
 });
