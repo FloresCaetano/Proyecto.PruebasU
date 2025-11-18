@@ -4,7 +4,7 @@ function getAllClientes(req, res) {
     res.json(clientes);
 }
 
-function validateClienteData(data) {
+function validateClienteData(data, clienteId = null) {
     const { nombre, email, telefono, direccion, ciudad } = data;
     
     if (!nombre || !email || !telefono || !direccion || !ciudad) {
@@ -19,6 +19,14 @@ function validateClienteData(data) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         return 'El email no tiene un formato válido';
+    }
+    
+    // Validar email duplicado
+    const emailExiste = clientes.find(c => 
+        c.email.toLowerCase() === email.toLowerCase() && c.id != clienteId
+    );
+    if (emailExiste) {
+        return 'El email ya está registrado';
     }
     
     return null;
@@ -49,6 +57,15 @@ function updateCliente(req, res) {
     const { nombre, email, telefono, direccion, ciudad } = req.body;
     const i = clientes.findIndex(c => c.id == id);
     if (i === -1) return res.status(404).json({ message: 'Cliente no encontrado' });
+    
+    // Validar si se está actualizando el email
+    if (email !== undefined) {
+        const error = validateClienteData({ nombre: nombre || clientes[i].nombre, email, telefono: telefono || clientes[i].telefono, direccion: direccion || clientes[i].direccion, ciudad: ciudad || clientes[i].ciudad }, id);
+        if (error) {
+            return res.status(400).json({ message: error });
+        }
+    }
+    
     if (nombre !== undefined) clientes[i].nombre = nombre;
     if (email !== undefined) clientes[i].email = email;
     if (telefono !== undefined) clientes[i].telefono = telefono;

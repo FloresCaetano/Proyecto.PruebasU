@@ -1,6 +1,12 @@
 const request = require('supertest');
 const app = require('../src/app.js');
 
+// Importar todos los tests de las entidades
+require('./auto.test.js');
+require('./cliente.test.js');
+require('./vendor.test.js');
+require('./concesionaria.test.js');
+
 describe('Pruebas sobre app.js (rutas y middleware)', () => {
     test('GET / debe devolver mensaje de estado', async () => {
         const res = await request(app).get('/');

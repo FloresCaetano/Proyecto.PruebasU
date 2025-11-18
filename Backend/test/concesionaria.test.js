@@ -208,4 +208,109 @@ describe('API de Concesionarias', () => {
     expect(actualizado.body.nombre).toBe('AutosEcuador Premium');
     expect(actualizado.body.gerente).toBe('Fernando Silva');
   });
+
+  // VALIDACIÓN: Nombre duplicado exacto
+  test('POST /api/concesionarias debería rechazar nombre duplicado', async () => {
+    const concesionaria1 = {
+      nombre: 'AutoMax Duplicado',
+      direccion: 'Av. Principal 100',
+      telefono: '022222222',
+      ciudad: 'Quito',
+      gerente: 'Gerente 1'
+    };
+
+    const concesionaria2 = {
+      nombre: 'AutoMax Duplicado',
+      direccion: 'Av. Secundaria 200',
+      telefono: '023333333',
+      ciudad: 'Guayaquil',
+      gerente: 'Gerente 2'
+    };
+
+    await request(app).post('/api/concesionarias').send(concesionaria1);
+    const res = await request(app).post('/api/concesionarias').send(concesionaria2);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toHaveProperty('message', 'Ya existe una concesionaria con ese nombre');
+  });
+
+  // VALIDACIÓN: Nombre duplicado case-insensitive
+  test('POST /api/concesionarias debería rechazar nombre duplicado sin importar mayúsculas', async () => {
+    const concesionaria1 = {
+      nombre: 'MotorPro',
+      direccion: 'Av. Principal 100',
+      telefono: '022222222',
+      ciudad: 'Quito',
+      gerente: 'Gerente 1'
+    };
+
+    const concesionaria2 = {
+      nombre: 'MOTORPRO',
+      direccion: 'Av. Secundaria 200',
+      telefono: '023333333',
+      ciudad: 'Guayaquil',
+      gerente: 'Gerente 2'
+    };
+
+    await request(app).post('/api/concesionarias').send(concesionaria1);
+    const res = await request(app).post('/api/concesionarias').send(concesionaria2);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toHaveProperty('message', 'Ya existe una concesionaria con ese nombre');
+  });
+
+  // VALIDACIÓN: Actualizar con nombre de otra concesionaria
+  test('PUT /api/concesionarias/:id debería rechazar nombre duplicado de otra concesionaria', async () => {
+    const concesionaria1 = {
+      nombre: 'Concesionaria Uno',
+      direccion: 'Av. Principal 100',
+      telefono: '022222222',
+      ciudad: 'Quito',
+      gerente: 'Gerente 1'
+    };
+
+    const concesionaria2 = {
+      nombre: 'Concesionaria Dos',
+      direccion: 'Av. Secundaria 200',
+      telefono: '023333333',
+      ciudad: 'Guayaquil',
+      gerente: 'Gerente 2'
+    };
+
+    await request(app).post('/api/concesionarias').send(concesionaria1);
+    const creado2 = await request(app).post('/api/concesionarias').send(concesionaria2);
+    const id2 = creado2.body.id;
+
+    const actualizado = await request(app)
+      .put(`/api/concesionarias/${id2}`)
+      .send({ nombre: 'Concesionaria Uno' });
+
+    expect(actualizado.statusCode).toBe(400);
+    expect(actualizado.body).toHaveProperty('message', 'Ya existe una concesionaria con ese nombre');
+  });
+
+  // VALIDACIÓN: Actualizar manteniendo su propio nombre
+  test('PUT /api/concesionarias/:id debería permitir actualizar sin cambiar el nombre', async () => {
+    const concesionaria = {
+      nombre: 'Concesionaria Original',
+      direccion: 'Av. Original 100',
+      telefono: '022222222',
+      ciudad: 'Quito',
+      gerente: 'Gerente Original'
+    };
+
+    const creado = await request(app).post('/api/concesionarias').send(concesionaria);
+    const id = creado.body.id;
+
+    const actualizado = await request(app)
+      .put(`/api/concesionarias/${id}`)
+      .send({ 
+        nombre: 'Concesionaria Original',
+        gerente: 'Gerente Modificado'
+      });
+
+    expect(actualizado.statusCode).toBe(200);
+    expect(actualizado.body.nombre).toBe('Concesionaria Original');
+    expect(actualizado.body.gerente).toBe('Gerente Modificado');
+  });
 });

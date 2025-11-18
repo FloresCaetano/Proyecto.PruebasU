@@ -15,7 +15,7 @@ function getAllConcesionarias(req, res) {
     res.json(concesionarias);
 }
 
-function validateConcesionariaData(data) {
+function validateConcesionariaData(data, concesionariaId = null) {
     const { nombre, direccion, telefono, ciudad, gerente } = data;
 
     if (!nombre || !direccion || !telefono || !ciudad || !gerente) {
@@ -25,6 +25,14 @@ function validateConcesionariaData(data) {
     if (nombre.trim() === '' || direccion.trim() === '' || telefono.trim() === '' || 
         ciudad.trim() === '' || gerente.trim() === '') {
         return 'Los campos no pueden estar vacíos o contener solo espacios';
+    }
+
+    // Validar nombre duplicado
+    const nombreExiste = concesionarias.find(c => 
+        c.nombre.toLowerCase() === nombre.toLowerCase() && c.id != concesionariaId
+    );
+    if (nombreExiste) {
+        return 'Ya existe una concesionaria con ese nombre';
     }
 
     return null;
@@ -59,6 +67,14 @@ function updateConcesionaria(req, res) {
 
     const i = concesionarias.findIndex(c => c.id == id);
     if (i === -1) return res.status(404).json({ message: 'Concesionaria no encontrada' });
+
+    // Validar si se está actualizando el nombre
+    if (nombre !== undefined) {
+        const error = validateConcesionariaData({ nombre, direccion: direccion || concesionarias[i].direccion, telefono: telefono || concesionarias[i].telefono, ciudad: ciudad || concesionarias[i].ciudad, gerente: gerente || concesionarias[i].gerente }, id);
+        if (error) {
+            return res.status(400).json({ message: error });
+        }
+    }
 
     if (nombre !== undefined) concesionarias[i].nombre = nombre;
     if (direccion !== undefined) concesionarias[i].direccion = direccion;

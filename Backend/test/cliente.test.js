@@ -221,4 +221,109 @@ describe('API de Clientes', () => {
     expect(actualizado.body.nombre).toBe('Luis Fernando Hernández');
     expect(actualizado.body.direccion).toBe('Calle Nueva 200');
   });
+
+  // VALIDACIÓN: Email duplicado exacto
+  test('POST /api/clientes debería rechazar email duplicado', async () => {
+    const cliente1 = {
+      nombre: 'Cliente Uno',
+      email: 'duplicado@email.com',
+      telefono: '0991111111',
+      direccion: 'Calle 1',
+      ciudad: 'Quito'
+    };
+
+    const cliente2 = {
+      nombre: 'Cliente Dos',
+      email: 'duplicado@email.com',
+      telefono: '0992222222',
+      direccion: 'Calle 2',
+      ciudad: 'Guayaquil'
+    };
+
+    await request(app).post('/api/clientes').send(cliente1);
+    const res = await request(app).post('/api/clientes').send(cliente2);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toHaveProperty('message', 'El email ya está registrado');
+  });
+
+  // VALIDACIÓN: Email duplicado case-insensitive
+  test('POST /api/clientes debería rechazar email duplicado sin importar mayúsculas', async () => {
+    const cliente1 = {
+      nombre: 'Cliente Uno',
+      email: 'test@email.com',
+      telefono: '0991111111',
+      direccion: 'Calle 1',
+      ciudad: 'Quito'
+    };
+
+    const cliente2 = {
+      nombre: 'Cliente Dos',
+      email: 'TEST@EMAIL.COM',
+      telefono: '0992222222',
+      direccion: 'Calle 2',
+      ciudad: 'Guayaquil'
+    };
+
+    await request(app).post('/api/clientes').send(cliente1);
+    const res = await request(app).post('/api/clientes').send(cliente2);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toHaveProperty('message', 'El email ya está registrado');
+  });
+
+  // VALIDACIÓN: Actualizar con email de otro cliente
+  test('PUT /api/clientes/:id debería rechazar email duplicado de otro cliente', async () => {
+    const cliente1 = {
+      nombre: 'Cliente Uno',
+      email: 'cliente1@email.com',
+      telefono: '0991111111',
+      direccion: 'Calle 1',
+      ciudad: 'Quito'
+    };
+
+    const cliente2 = {
+      nombre: 'Cliente Dos',
+      email: 'cliente2@email.com',
+      telefono: '0992222222',
+      direccion: 'Calle 2',
+      ciudad: 'Guayaquil'
+    };
+
+    await request(app).post('/api/clientes').send(cliente1);
+    const creado2 = await request(app).post('/api/clientes').send(cliente2);
+    const id2 = creado2.body.id;
+
+    const actualizado = await request(app)
+      .put(`/api/clientes/${id2}`)
+      .send({ email: 'cliente1@email.com' });
+
+    expect(actualizado.statusCode).toBe(400);
+    expect(actualizado.body).toHaveProperty('message', 'El email ya está registrado');
+  });
+
+  // VALIDACIÓN: Actualizar manteniendo su propio email
+  test('PUT /api/clientes/:id debería permitir actualizar sin cambiar el email', async () => {
+    const cliente = {
+      nombre: 'Cliente Original',
+      email: 'original@email.com',
+      telefono: '0991111111',
+      direccion: 'Calle Original',
+      ciudad: 'Quito'
+    };
+
+    const creado = await request(app).post('/api/clientes').send(cliente);
+    const id = creado.body.id;
+
+    const actualizado = await request(app)
+      .put(`/api/clientes/${id}`)
+      .send({ 
+        nombre: 'Cliente Modificado',
+        email: 'original@email.com'
+      });
+
+    expect(actualizado.statusCode).toBe(200);
+    expect(actualizado.body.nombre).toBe('Cliente Modificado');
+    expect(actualizado.body.email).toBe('original@email.com');
+  });
 });
