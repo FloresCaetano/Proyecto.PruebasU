@@ -18,6 +18,11 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
+// Agregada ruta raíz para estado / pruebas
+app.get('/', (req, res) => {
+    res.json({ message: 'API Concesionarias - Backend activo' });
+});
+
 // Rutas Base de cada modelo (con y sin prefijo /api para compatibilidad)
 app.use('/api/autos', autoRoutes);
 app.use('/autos', autoRoutes);

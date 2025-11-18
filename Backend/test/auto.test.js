@@ -59,6 +59,36 @@ describe('API de Autos', () => {
     expect(actualizado.body.color).toBe('Negro');
   });
 
+  // Nueva prueba: actualizar todos los campos para cubrir las ramas de asignación en updateAuto
+  test('PUT /autos/:id debería actualizar todos los campos del auto', async () => {
+    const auto = {
+      marca: 'TestMake',
+      modelo: 'TestModel',
+      año: 2000,
+      color: 'Gris',
+      numeroSerie: 'TEST123456'
+    };
+
+    const creado = await request(app).post('/autos').send(auto);
+    const id = creado.body.id;
+
+    const cambios = {
+      marca: 'NuevoMake',
+      modelo: 'NuevoModel',
+      año: 2022,
+      color: 'Negro',
+      numeroSerie: 'NEWPLATE123'
+    };
+
+    const res = await request(app).put(`/autos/${id}`).send(cambios);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.marca).toBe(cambios.marca);
+    expect(res.body.modelo).toBe(cambios.modelo);
+    expect(res.body.año).toBe(cambios.año);
+    expect(res.body.color).toBe(cambios.color);
+    expect(res.body.numeroSerie).toBe(cambios.numeroSerie);
+  });
+
   // DELETE
   // Prueba: crea un auto, lo elimina y verifica que ya no aparece en la lista
   test('DELETE /autos/:id debería eliminar un auto', async () => {

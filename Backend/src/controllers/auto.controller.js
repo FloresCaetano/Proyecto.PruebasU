@@ -71,5 +71,9 @@ function deleteAuto(req, res) {
     res.json(deleted[0]);
 }
 
+// Helper de pruebas: limpia el arreglo de autos 
+function _clearAutos() {
+    autos.length = 0;
+}
 
-module.exports = { getAllAutos, addNewAuto, updateAuto, deleteAuto };
+module.exports = { getAllAutos, addNewAuto, updateAuto, deleteAuto, _clearAutos };
