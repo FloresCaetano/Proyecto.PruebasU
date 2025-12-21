@@ -1,0 +1,34 @@
+Resumen de pruebas unitarias para `vendedor.service.spec.ts`
+
+1) 'debería ser creado'
+- Verifica que el servicio `VendedorService` se inyecta correctamente.
+
+2) 'debería devolver una lista de vendedores'
+- Simula un GET a `http://localhost:3000/api/vendedores` y espera un arreglo de vendedores.
+
+3) 'debería obtener un vendedor por id'
+- Simula un GET a `http://localhost:3000/api/vendedores/1` y valida que devuelva el objeto esperado.
+
+4) 'debería agregar un vendedor'
+- Simula un POST a `http://localhost:3000/api/vendedores` con un nuevo vendedor y verifica la respuesta con `id`.
+
+5) 'debería actualizar un vendedor'
+- Simula un PUT a `http://localhost:3000/api/vendedores/1` y valida que el cuerpo enviado se devuelva actualizado.
+
+6) 'debería eliminar un vendedor'
+- Simula un DELETE a `http://localhost:3000/api/vendedores/1` y espera una respuesta vacía/verdadera.
+
+7) Validaciones y errores (basadas en `Backend/test/vendor.test.js`):
+   - falta name -> POST devuelve 400 (Nombre requerido).
+   - email inválido -> POST devuelve 400 (Email inválido).
+   - teléfono inválido -> POST devuelve 400 (Teléfono inválido).
+   - comisión fuera de rango -> POST devuelve 400 (Comisión inválida).
+   - email duplicado -> POST devuelve 409 (Conflict).
+   - codigoEmpleado duplicado -> POST devuelve 409 con mensaje 'El código de empleado ya está registrado'.
+   - GET por id inexistente -> GET devuelve 404.
+   - PUT para id inexistente -> PUT devuelve 404.
+
+Notas:
+- Las rutas y códigos de estado usados en los tests coinciden con las pruebas del backend (`/api/vendedores`).
+- Los tests usan `HttpTestingController` para interceptar llamadas HTTP y emular respuestas (incluyendo errores 400/404/409).
+- Si el proyecto de Angular no dispone de las clases `Vendedor` o `VendedorService`, el archivo spec servirá como plantilla; puede requerir crear esas entidades o adaptar los nombres.
