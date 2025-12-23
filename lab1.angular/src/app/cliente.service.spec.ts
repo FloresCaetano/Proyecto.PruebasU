@@ -46,9 +46,9 @@ describe('Servicio de Clientes', () => {
 
     it('debería obtener un cliente por id', () => {
         const dummyCliente = new Cliente('Juan', 'juan@test.com');
-        dummyCliente.id = 1;
+        dummyCliente._id = '1';
 
-        service.getCliente(1).subscribe(cliente => {
+        service.getCliente('1').subscribe(cliente => {
             expect(cliente).toEqual(dummyCliente);
         });
 
@@ -60,7 +60,7 @@ describe('Servicio de Clientes', () => {
     it('debería agregar un cliente', () => {
         const newCliente = new Cliente('Juan', 'juan@test.com');
         const returnedCliente = new Cliente('Juan', 'juan@test.com');
-        returnedCliente.id = 1;
+        returnedCliente._id = '1';
 
         service.addCliente(newCliente).subscribe(cliente => {
             expect(cliente).toEqual(returnedCliente);
@@ -74,7 +74,7 @@ describe('Servicio de Clientes', () => {
 
     it('debería actualizar un cliente', () => {
         const updatedCliente = new Cliente('Juan Updated', 'juan@test.com');
-        updatedCliente.id = 1;
+        updatedCliente._id = '1';
 
         service.updateCliente(updatedCliente).subscribe(cliente => {
             expect(cliente).toEqual(updatedCliente);
@@ -87,7 +87,7 @@ describe('Servicio de Clientes', () => {
     });
 
     it('debería eliminar un cliente', () => {
-        const id = 1;
+        const id = '1';
 
         service.deleteCliente(id).subscribe(res => {
             expect(res).toBeTruthy();
@@ -115,7 +115,7 @@ describe('Servicio de Clientes', () => {
 
     it('debería manejar error del backend cuando se intenta actualizar un cliente con email inválido', () => {
         const updatedCliente = new Cliente('Juan', 'invalid-email');
-        updatedCliente.id = 1;
+        updatedCliente._id = '1';
 
         service.updateCliente(updatedCliente).subscribe({
             next: () => fail('Debería haber fallado con error 400'),
