@@ -6,6 +6,9 @@ const router = express.Router();
 // Ruta GET para obtener todos los clientes
 router.get('/', getAllClientes);
 
+// Ruta GET para obtener un cliente mediante su id
+router.get('/:id', getClienteById);
+
 // Ruta POST para crear un nuevo cliente
 router.post('/', addNewCliente);
 
