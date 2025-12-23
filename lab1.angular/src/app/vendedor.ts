@@ -1,5 +1,5 @@
 export class Vendedor {
-    _id?: string;
+    id?: string;
     name: string;
     email: string;
     telefono: string;

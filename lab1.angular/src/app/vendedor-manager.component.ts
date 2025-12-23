@@ -61,7 +61,7 @@ import { Vendedor } from './vendedor';
           </thead>
           <tbody>
             <tr *ngFor="let vendedor of vendedores()">
-              <td>{{ vendedor._id }}</td>
+              <td>{{ vendedor.id }}</td>
               <td>{{ vendedor.name }}</td>
               <td>{{ vendedor.email }}</td>
               <td>{{ vendedor.telefono }}</td>
@@ -69,7 +69,7 @@ import { Vendedor } from './vendedor';
               <td>{{ vendedor.codigoEmpleado }}</td>
               <td>
                 <button (click)="editVendedor(vendedor)" class="btn btn-sm btn-warning">Editar</button>
-                <button (click)="deleteVendedor(vendedor._id!)" class="btn btn-sm btn-danger">Eliminar</button>
+                <button (click)="deleteVendedor(vendedor.id!)" class="btn btn-sm btn-danger">Eliminar</button>
               </td>
             </tr>
           </tbody>
@@ -191,7 +191,7 @@ export class VendedorManagerComponent implements OnInit {
     );
 
     if (this.editingId()) {
-      vendedor._id = this.editingId()!;
+      vendedor.id = this.editingId()!;
       this.vendedorService.updateVendedor(vendedor).subscribe({
         next: () => {
           this.loadVendedores();
@@ -211,7 +211,7 @@ export class VendedorManagerComponent implements OnInit {
   }
 
   editVendedor(vendedor: Vendedor) {
-    this.editingId.set(vendedor._id!);
+    this.editingId.set(vendedor.id!);
     this.formData = {
       name: vendedor.name,
       email: vendedor.email,

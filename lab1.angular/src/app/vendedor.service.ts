@@ -24,7 +24,7 @@ export class VendedorService {
   }
 
   updateVendedor(v: Vendedor): Observable<Vendedor> {
-    return this.http.put<Vendedor>(`${this.baseUrl}/${v._id}`, v);
+    return this.http.put<Vendedor>(`${this.baseUrl}/${v.id}`, v);
   }
 
   deleteVendedor(id: string): Observable<any> {
