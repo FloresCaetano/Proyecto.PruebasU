@@ -46,9 +46,9 @@ describe('Servicio de Vendedores', () => {
 
     it('debería obtener un vendedor por id', () => {
         const dummy = new Vendedor('Ana García', 'ana.garcia@concesionaria.com', '0987654321', 20, 'EMP-123');
-        dummy.id = 1;
+        dummy.id = "1";
 
-        service.getVendedor(1).subscribe(v => {
+        service.getVendedor("1").subscribe(v => {
             expect(v).toEqual(dummy);
         });
 
@@ -60,7 +60,7 @@ describe('Servicio de Vendedores', () => {
     it('debería agregar un vendedor', () => {
         const newV = new Vendedor('Ana García', 'ana.garcia@concesionaria.com', '0987654321', 20, 'EMP-123');
         const returned = new Vendedor('Ana García', 'ana.garcia@concesionaria.com', '0987654321', 20, 'EMP-123');
-        returned.id = 1;
+        returned.id = "1";
 
         service.addVendedor(newV).subscribe(v => {
             expect(v).toEqual(returned);
@@ -74,7 +74,7 @@ describe('Servicio de Vendedores', () => {
 
     it('debería actualizar un vendedor', () => {
         const updated = new Vendedor('Ana G. Actualizada', 'ana.garcia@concesionaria.com', '0987654321', 20, 'EMP-999');
-        updated.id = 1;
+        updated.id = "1";
 
         service.updateVendedor(updated).subscribe(v => {
             expect(v).toEqual(updated);
@@ -87,7 +87,7 @@ describe('Servicio de Vendedores', () => {
     });
 
     it('debería eliminar un vendedor', () => {
-        const id = 1;
+        const id = "1";
 
         service.deleteVendedor(id).subscribe(res => {
             expect(res).toBeTruthy();
@@ -169,7 +169,7 @@ describe('Servicio de Vendedores', () => {
     });
 
     it('debería devolver 404 al obtener un id inexistente', () => {
-        service.getVendedor(999999).subscribe({
+        service.getVendedor("999999").subscribe({
             next: () => fail('Debería haber devuelto 404'),
             error: (err) => expect(err.status).toBe(404)
         });
@@ -181,7 +181,7 @@ describe('Servicio de Vendedores', () => {
 
     it('debería devolver 404 al actualizar un vendedor inexistente', () => {
         const updated = new Vendedor('No existe', 'no@ex.com', '123', 10, 'EMP-9999');
-        updated.id = 999999;
+        updated.id = "999999";
 
         service.updateVendedor(updated).subscribe({
             next: () => fail('Debería haber devuelto 404'),
