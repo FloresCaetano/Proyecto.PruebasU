@@ -76,6 +76,7 @@ function deleteAuto(req, res) {
 }
 
 // Helper de pruebas: limpia el arreglo de autos 
+/* istanbul ignore next */
 function _clearAutos() {
     autos.length = 0;
 }

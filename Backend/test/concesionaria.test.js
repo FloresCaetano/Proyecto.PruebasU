@@ -1,24 +1,30 @@
 const request = require('supertest');
 const app = require('../src/app.js');
+const { _clearConcesionarias } = require('../src/controllers/concesionaria.controller');
 
 let token;
 
 describe('API de Concesionarias', () => {
-  // Obtener token antes de los tests
-  beforeAll(async () => {
-    const loginRes = await request(app).post('/api/auth/login').set('Authorization', `Bearer ${token}`).send({
-      email: 'admin@consecionaria.com',
-      password: 'consesionariachida'
+    // Obtener token antes de los tests
+    beforeAll(async () => {
+        const loginRes = await request(app).post('/api/auth/login').send({
+            email: 'admin@consecionaria.com',
+            password: 'consesionariachida'
+        });
+        token = loginRes.body.token;
     });
-    token = loginRes.body.token;
-  });
 
-  // GET
-  test('GET /api/concesionarias debería devolver lista vacía inicialmente', async () => {
-    const res = await request(app).get('/api/concesionarias').set('Authorization', `Bearer ${token}`);
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toEqual([]);
-  });
+    // Limpiar concesionarias antes de cada test
+    beforeEach(() => {
+        _clearConcesionarias();
+    });
+
+    // GET
+    test('GET /api/concesionarias debería devolver lista vacía inicialmente', async () => {
+        const res = await request(app).get('/api/concesionarias').set('Authorization', `Bearer ${token}`);
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toEqual([]);
+    });
 
   // POST
   test('POST /api/concesionarias debería crear una nueva concesionaria', async () => {

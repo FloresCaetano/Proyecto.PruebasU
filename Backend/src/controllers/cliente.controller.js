@@ -80,4 +80,10 @@ function deleteCliente(req, res) {
     res.json({ message: 'Cliente eliminado exitosamente', cliente: deleted[0] });
 }
 
-module.exports = { getAllClientes, addNewCliente, updateCliente, deleteCliente, getClienteById };
+// Helper de pruebas
+/* istanbul ignore next */
+function _clearClientes() {
+    clientes.length = 0;
+}
+
+module.exports = { getAllClientes, addNewCliente, updateCliente, deleteCliente, getClienteById, _clearClientes };

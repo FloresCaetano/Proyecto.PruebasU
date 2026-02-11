@@ -57,7 +57,7 @@ function addNewConcesionaria(req, res) {
     };
 
     concesionarias.push(newConcesionaria);
-    res.status(201).json({message: 'Concesionaria agregada exitosamente', newConcesionaria});
+    res.status(201).json(newConcesionaria);
 }
 
 // PUT - Actualizar una concesionaria existente
@@ -82,7 +82,7 @@ function updateConcesionaria(req, res) {
     if (ciudad !== undefined) concesionarias[i].ciudad = ciudad;
     if (gerente !== undefined) concesionarias[i].gerente = gerente;
 
-    res.json({message: 'Concesionaria actualizada exitosamente', concesionaria: concesionarias[i]});
+    res.json(concesionarias[i]);
 }
 
 // DELETE - Eliminar una concesionaria
@@ -97,9 +97,16 @@ function deleteConcesionaria(req, res) {
     res.json(deleted[0]);
 }
 
+// Helper de pruebas
+/* istanbul ignore next */
+function _clearConcesionarias() {
+    concesionarias.length = 0;
+}
+
 module.exports = { 
     getAllConcesionarias, 
     addNewConcesionaria, 
     updateConcesionaria, 
-    deleteConcesionaria 
+    deleteConcesionaria,
+    _clearConcesionarias 
 };

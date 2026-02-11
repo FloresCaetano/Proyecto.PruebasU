@@ -89,10 +89,17 @@ function deleteVendor(req, res) {
     res.status(200).json({ message: 'Vendedor eliminado exitosamente' });
 }
 
+// Helper de pruebas
+/* istanbul ignore next */
+function _clearVendedores() {
+    vendedores.length = 0;
+}
+
 module.exports = {
     createVendor,
     getAllVendors,
     getVendorById,
     updateVendor,
-    deleteVendor
+    deleteVendor,
+    _clearVendedores
 };

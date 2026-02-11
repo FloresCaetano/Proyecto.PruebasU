@@ -1,4 +1,6 @@
-const API_URL = "http://localhost:3000/api/auth";
+import { getApiUrl } from './config';
+
+const API_URL = getApiUrl('/api/auth');
 
 /**
  * Login de usuario

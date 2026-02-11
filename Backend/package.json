@@ -1,9 +1,9 @@
 {
-  "name": "hospital_api",
+  "name": "concesionaria_api",
   "version": "1.0.0",
-  "description": "Pruebas Software Proyecto P1",
+  "description": "API Backend Concesionaria",
   "scripts": {
-    "start": "node app.js",
+    "start": "node src/app.js",
     "test": "jest",
     "test-coverage": "jest --coverage",
     "lint": "eslint",
@@ -16,6 +16,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.6.1",
     "eslint": "^9.39.1",
     "express": "^5.1.0",
     "jest": "^30.2.0",

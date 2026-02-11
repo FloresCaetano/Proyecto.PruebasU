@@ -1,5 +1,7 @@
+import { getApiUrl } from './config';
+
 // URL base del backend para autos
-const API_URL = "http://localhost:3000/api/autos";
+const API_URL = getApiUrl('/api/autos');
 
 /**
  * Obtener headers de autenticación

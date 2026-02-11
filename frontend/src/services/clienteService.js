@@ -1,5 +1,7 @@
+import { getApiUrl } from './config';
+
 // URL base del backend para clientes
-const API_URL = "http://localhost:3000/api/clientes";
+const API_URL = getApiUrl('/api/clientes');
 
 /**
  * Obtener headers de autenticación

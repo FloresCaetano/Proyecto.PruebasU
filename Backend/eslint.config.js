@@ -6,6 +6,13 @@ module.exports = [
         languageOptions: {
             ecmaVersion: 2021,
             sourceType: 'commonjs',
+            globals: {
+                process: 'readonly',
+                require: 'readonly',
+                module: 'readonly',
+                __dirname: 'readonly',
+                console: 'readonly'
+            }
         },
         rules: {
             // Importa las reglas recomendadas de @eslint/js como base

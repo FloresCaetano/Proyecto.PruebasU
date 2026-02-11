@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = 'tu_jwt_secret_key_2025';
+/* istanbul ignore next */
+const JWT_SECRET = process.env.JWT_SECRET || 'tu_jwt_secret_key_2025';
 
 // Middleware que protege rutas usando JWT
 function authMiddleware(req, res, next) {

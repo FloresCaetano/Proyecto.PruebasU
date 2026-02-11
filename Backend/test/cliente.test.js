@@ -1,24 +1,30 @@
 const request = require('supertest');
 const app = require('../src/app.js');
+const { _clearClientes } = require('../src/controllers/cliente.controller');
 
 let token;
 
 describe('API de Clientes', () => {
-  // Obtener token antes de los tests
-  beforeAll(async () => {
-    const loginRes = await request(app).post('/api/auth/login').set('Authorization', `Bearer ${token}`).send({
-      email: 'admin@consecionaria.com',
-      password: 'consesionariachida'
+    // Obtener token antes de los tests
+    beforeAll(async () => {
+        const loginRes = await request(app).post('/api/auth/login').send({
+            email: 'admin@consecionaria.com',
+            password: 'consesionariachida'
+        });
+        token = loginRes.body.token;
     });
-    token = loginRes.body.token;
-  });
 
-  // GET
-  test('GET /api/clientes debería devolver lista vacía inicialmente', async () => {
-    const res = await request(app).get('/api/clientes').set('Authorization', `Bearer ${token}`);
-    expect(res.statusCode).toBe(200);
-    expect(res.body.clientes).toEqual([]);
-  });
+    // Limpiar clientes antes de cada test
+    beforeEach(() => {
+        _clearClientes();
+    });
+
+    // GET
+    test('GET /api/clientes debería devolver lista vacía inicialmente', async () => {
+        const res = await request(app).get('/api/clientes').set('Authorization', `Bearer ${token}`);
+        expect(res.statusCode).toBe(200);
+        expect(res.body.clientes).toEqual([]);
+    });
 
   // POST
   test('POST /api/clientes debería crear un nuevo cliente', async () => {
@@ -85,6 +91,31 @@ describe('API de Clientes', () => {
 
     const res = await request(app).get('/api/clientes').set('Authorization', `Bearer ${token}`);
     expect(res.body.clientes.find(c => c.id === id)).toBeUndefined();
+  });
+
+  // GET by ID
+  test('GET /api/clientes/:id debería obtener un cliente por ID', async () => {
+    const cliente = {
+      nombre: 'Cliente Test',
+      email: 'cliente.test@email.com',
+      telefono: '0912345678',
+      direccion: 'Calle Test 123',
+      ciudad: 'Quito'
+    };
+
+    const creado = await request(app).post('/api/clientes').set('Authorization', `Bearer ${token}`).send(cliente);
+    const id = creado.body.cliente.id;
+
+    const res = await request(app).get(`/api/clientes/${id}`).set('Authorization', `Bearer ${token}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.cliente.nombre).toBe('Cliente Test');
+  });
+
+  // GET by ID - Cliente no encontrado
+  test('GET /api/clientes/:id debería retornar 404 si cliente no existe', async () => {
+    const res = await request(app).get('/api/clientes/999999999').set('Authorization', `Bearer ${token}`);
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toHaveProperty('message', 'Cliente no encontrado');
   });
 
   // VALIDACIÓN DE FORMATO: Email inválido
@@ -157,7 +188,7 @@ describe('API de Clientes', () => {
 
     const res = await request(app).post('/api/clientes').set('Authorization', `Bearer ${token}`).send(clienteInvalido);
     expect(res.statusCode).toBe(400);
-    expect(res.body).toHaveProperty('message', 'Los campos no pueden estar vacíos o contener solo espacios');
+    expect(res.body).toHaveProperty('message', 'Nombre, Email, Teléfono, Dirección y Ciudad son requeridos');
   });
 
   // COBERTURA: Actualizar email específicamente

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const autoRoutes = require('./routes/auto.routes');
 const vendorRoutes = require('./routes/vendor.route');
@@ -47,6 +48,7 @@ app.use((req, res) => {
 
 // iniciar servidor si se ejecuta con `node app.js`
 /* eslint-disable no-undef, no-console */
+/* istanbul ignore if */
 if (require.main === module) {
     const port = process.env.PORT || 3000;
     app.listen(port, () => {
