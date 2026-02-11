@@ -1,10 +1,16 @@
 :root {
   --bg: #f5f7fb;
   --card: #ffffff;
-  --accent: #0b76ef;
+  --accent: #d32f2f;
+  /* Professional Red for automotive */
+  --accent-hover: #b71c1c;
+  --secondary: #374151;
+  /* Charcoal Grey */
   --muted: #6b7280;
   --success: #16a34a;
   --danger: #ef4444;
+  --header-bg: linear-gradient(135deg, #1e3a8a 0%, #111827 100%);
+  /* Deep Navy Blue */
 }
 
 html,
@@ -12,8 +18,8 @@ body,
 #root {
   height: 100%;
   margin: 0;
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background: linear-gradient(180deg, #eef2ff 0%, var(--bg) 100%);
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg);
   color: #111827;
 }
 
@@ -21,26 +27,26 @@ body,
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
   padding: 0;
 }
 
 .app-header {
   width: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--header-bg);
   color: white;
-  padding: 20px 32px;
+  padding: 16px 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .app-title {
   margin: 0;
-  font-size: 28px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .user-info {
@@ -48,23 +54,26 @@ body,
   align-items: center;
   gap: 20px;
   font-size: 14px;
+  font-weight: 500;
 }
 
 .logout-btn {
   padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .logout-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .app-container {
