@@ -1,6 +1,6 @@
 import { getApiUrl } from './config';
 
-const API_URL = getApiUrl('/api/auth');
+const API_URL = getApiUrl('/auth');
 
 /**
  * Login de usuario
