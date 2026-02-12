@@ -1,5 +1,6 @@
 import http from 'k6/http';
 import { check, group, sleep } from 'k6';
+import { testVendorLifecycle } from './vendor_k6_test.js';
 
 // Configurar URL Base - cambiar a la de producción al desplegar
 const BASE_URL = __ENV.BASE_URL || 'http://localhost:5001/concesionariapruebas/us-central1/api';
@@ -52,9 +53,10 @@ export default function () {
         check(autosRes, { 'status is 200': (r) => r.status === 200 });
         sleep(1);
 
-        // 3. Obtener Vendedores
-        const vendorRes = http.get(`${BASE_URL}/api/vendedores`, { headers: authHeaders });
-        check(vendorRes, { 'status is 200': (r) => r.status === 200 });
+        // 3. Ciclo de vida Vendedores (CRUD)
+        group('Vendedores Lifecycle', function () {
+            testVendorLifecycle(BASE_URL, { headers: authHeaders });
+        });
         sleep(1);
 
         // 4. Obtener Clientes
