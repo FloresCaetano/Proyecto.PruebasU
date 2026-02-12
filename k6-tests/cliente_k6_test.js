@@ -17,17 +17,17 @@ export function testClienteLifecycle(baseUrl, params) {
     // 1. Crear Cliente (POST)
     const createRes = http.post(`${baseUrl}/api/clientes`, JSON.stringify(newClient), params);
 
-    check(createRes, {
+    const checkId = check(createRes, {
         'create client status is 201': (r) => r.status === 201,
-        'create client has id': (r) => r.json('id') !== undefined || r.json('_id') !== undefined,
+        'create client has id': (r) => r.json('cliente.id') !== undefined || r.json('cliente._id') !== undefined,
     });
 
-    if (createRes.status !== 201) {
-        console.error(`Failed to create client: ${createRes.status} ${createRes.body}`);
+    if (!checkId || createRes.status !== 201) {
+        console.error(`Create Client Failed. Status: ${createRes.status}. Body: ${createRes.body}`);
         return;
     }
 
-    const createdId = createRes.json('id') || createRes.json('_id');
+    const createdId = createRes.json('cliente.id') || createRes.json('cliente._id');
     sleep(1);
 
     // 2. Obtener todos los clientes (GET)
