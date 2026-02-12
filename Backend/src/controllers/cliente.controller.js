@@ -3,7 +3,11 @@ const { Cliente } = require('../models');
 async function getAllClientes(req, res) {
     try {
         const clientes = await Cliente.find();
-        res.json({ message: 'Clientes obtenidos exitosamente', clientes });
+        const clientesWithId = clientes.map(cliente => ({
+            ...cliente.toObject(),
+            id: cliente._id
+        }));
+        res.json({ message: 'Clientes obtenidos exitosamente', clientes: clientesWithId });
     } catch (error) {
         res.status(500).json({ message: 'Error interno del servidor', error: error.message });
     }
@@ -14,7 +18,10 @@ async function getClienteById(req, res) {
         const { id } = req.params;
         const cliente = await Cliente.findById(id);
         if (!cliente) return res.status(404).json({ message: 'Cliente no encontrado' });
-        res.json({ message: 'Cliente obtenido exitosamente', cliente });
+        res.json({ 
+            message: 'Cliente obtenido exitosamente', 
+            cliente: { ...cliente.toObject(), id: cliente._id } 
+        });
     } catch (error) {
         if (error.name === 'CastError') {
             return res.status(400).json({ message: 'ID inválido' });
@@ -36,7 +43,10 @@ async function addNewCliente(req, res) {
         });
 
         const savedCliente = await newCliente.save();
-        res.status(201).json({ message: 'Cliente agregado exitosamente', cliente: savedCliente });
+        res.status(201).json({ 
+            message: 'Cliente agregado exitosamente', 
+            cliente: { ...savedCliente.toObject(), id: savedCliente._id } 
+        });
     } catch (error) {
         if (error.name === 'ValidationError') {
             const messages = Object.values(error.errors).map(err => err.message);
@@ -62,7 +72,10 @@ async function updateCliente(req, res) {
 
         if (!updatedCliente) return res.status(404).json({ message: 'Cliente no encontrado' });
 
-        res.json({ message: 'Cliente actualizado exitosamente', cliente: updatedCliente });
+        res.json({ 
+            message: 'Cliente actualizado exitosamente', 
+            cliente: { ...updatedCliente.toObject(), id: updatedCliente._id } 
+        });
     } catch (error) {
         if (error.name === 'CastError') {
             return res.status(400).json({ message: 'ID inválido' });
@@ -85,7 +98,10 @@ async function deleteCliente(req, res) {
 
         if (!deletedCliente) return res.status(404).json({ message: 'Cliente no encontrado' });
 
-        res.json({ message: 'Cliente eliminado exitosamente', cliente: deletedCliente });
+        res.json({ 
+            message: 'Cliente eliminado exitosamente', 
+            cliente: { ...deletedCliente.toObject(), id: deletedCliente._id } 
+        });
     } catch (error) {
         if (error.name === 'CastError') {
             return res.status(400).json({ message: 'ID inválido' });

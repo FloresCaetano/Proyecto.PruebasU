@@ -1,6 +1,7 @@
 const express = require('express');
 const { 
-    getAllConcesionarias, 
+    getAllConcesionarias,
+    getConcesionariaById, 
     addNewConcesionaria, 
     updateConcesionaria, 
     deleteConcesionaria 
@@ -10,6 +11,9 @@ const router = express.Router();
 
 // Ruta GET para obtener todas las concesionarias
 router.get('/', getAllConcesionarias);
+
+// Ruta GET para obtener una concesionaria por ID
+router.get('/:id', getConcesionariaById);
 
 // Ruta POST para crear una nueva concesionaria
 router.post('/', addNewConcesionaria);

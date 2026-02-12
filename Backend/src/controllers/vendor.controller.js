@@ -14,7 +14,7 @@ async function createVendor(req, res) {
         });
 
         const savedVendedor = await newVendedor.save();
-        return res.status(201).json(savedVendedor);
+        return res.status(201).json({ ...savedVendedor.toObject(), id: savedVendedor._id });
     } catch (error) {
         if (error.name === 'ValidationError') {
             const messages = Object.values(error.errors).map(err => err.message);
@@ -33,7 +33,11 @@ async function createVendor(req, res) {
 async function getAllVendors(req, res) {
     try {
         const vendedores = await Vendedor.find();
-        res.json(vendedores);
+        const vendedoresWithId = vendedores.map(vendedor => ({
+            ...vendedor.toObject(),
+            id: vendedor._id
+        }));
+        res.json(vendedoresWithId);
     } catch (error) {
         res.status(500).json({ message: 'Error interno del servidor', error: error.message });
     }
@@ -48,7 +52,7 @@ async function getVendorById(req, res) {
         if (!vendedor)
             return res.status(404).json({ message: 'Vendedor no encontrado' });
 
-        res.json(vendedor);
+        res.json({ ...vendedor.toObject(), id: vendedor._id });
     } catch (error) {
         if (error.name === 'CastError') {
             return res.status(400).json({ message: 'ID inválido' });
@@ -71,7 +75,7 @@ async function updateVendor(req, res) {
 
         if (!updatedVendedor) return res.status(404).json({ message: 'Vendedor no encontrado' });
 
-        res.json(updatedVendedor);
+        res.json({ ...updatedVendedor.toObject(), id: updatedVendedor._id });
     } catch (error) {
         if (error.name === 'CastError') {
             return res.status(400).json({ message: 'ID inválido' });
@@ -98,7 +102,10 @@ async function deleteVendor(req, res) {
         if (!deletedVendedor)
             return res.status(404).json({ message: 'Vendedor no encontrado' });
 
-        res.status(200).json({ message: 'Vendedor eliminado exitosamente' });
+        res.status(200).json({ 
+            message: 'Vendedor eliminado exitosamente', 
+            data: { ...deletedVendedor.toObject(), id: deletedVendedor._id } 
+        });
     } catch (error) {
         if (error.name === 'CastError') {
             return res.status(400).json({ message: 'ID inválido' });

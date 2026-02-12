@@ -4,8 +4,27 @@ const { Concesionaria } = require('../models');
 async function getAllConcesionarias(req, res) {
     try {
         const concesionarias = await Concesionaria.find();
-        res.json(concesionarias);
+        const concesionariasWithId = concesionarias.map(concesionaria => ({
+            ...concesionaria.toObject(),
+            id: concesionaria._id
+        }));
+        res.json(concesionariasWithId);
     } catch (error) {
+        res.status(500).json({ message: 'Error interno del servidor', error: error.message });
+    }
+}
+
+// GET - Obtener una concesionaria por ID
+async function getConcesionariaById(req, res) {
+    try {
+        const { id } = req.params;
+        const concesionaria = await Concesionaria.findById(id);
+        if (!concesionaria) return res.status(404).json({ message: 'Concesionaria no encontrada' });
+        res.json({ ...concesionaria.toObject(), id: concesionaria._id });
+    } catch (error) {
+        if (error.name === 'CastError') {
+            return res.status(400).json({ message: 'ID inválido' });
+        }
         res.status(500).json({ message: 'Error interno del servidor', error: error.message });
     }
 }
@@ -33,7 +52,7 @@ async function addNewConcesionaria(req, res) {
         });
 
         const savedConcesionaria = await newConcesionaria.save();
-        res.status(201).json(savedConcesionaria);
+        res.status(201).json({ ...savedConcesionaria.toObject(), id: savedConcesionaria._id });
     } catch (error) {
         if (error.name === 'ValidationError') {
             const messages = Object.values(error.errors).map(err => err.message);
@@ -69,7 +88,7 @@ async function updateConcesionaria(req, res) {
 
         if (!updatedConcesionaria) return res.status(404).json({ message: 'Concesionaria no encontrada' });
 
-        res.json(updatedConcesionaria);
+        res.json({ ...updatedConcesionaria.toObject(), id: updatedConcesionaria._id });
     } catch (error) {
         if (error.name === 'CastError') {
             return res.status(400).json({ message: 'ID inválido' });
@@ -90,7 +109,7 @@ async function deleteConcesionaria(req, res) {
 
         if (!deletedConcesionaria) return res.status(404).json({ message: 'Concesionaria no encontrada' });
 
-        res.json(deletedConcesionaria);
+        res.json({ ...deletedConcesionaria.toObject(), id: deletedConcesionaria._id });
     } catch (error) {
         if (error.name === 'CastError') {
             return res.status(400).json({ message: 'ID inválido' });
@@ -110,8 +129,8 @@ async function _clearConcesionarias() {
 }
 
 module.exports = { 
-    getAllConcesionarias, 
-    addNewConcesionaria, 
+    getAllConcesionarias,
+    getConcesionariaById, 
     updateConcesionaria, 
     deleteConcesionaria,
     _clearConcesionarias 

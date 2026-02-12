@@ -3,7 +3,11 @@ const { Auto } = require('../models');
 async function getAllAutos(req, res) {
     try {
         const autos = await Auto.find();
-        res.json(autos);
+        const autosWithId = autos.map(auto => ({
+            ...auto.toObject(),
+            id: auto._id
+        }));
+        res.json(autosWithId);
     } catch (error) {
         res.status(500).json({ message: 'Error interno del servidor', error: error.message });
     }
@@ -14,7 +18,7 @@ async function getAutoById(req, res) {
         const { id } = req.params;
         const auto = await Auto.findById(id);
         if (!auto) return res.status(404).json({ message: 'Auto no encontrado' });
-        res.json(auto);
+        res.json({ ...auto.toObject(), id: auto._id });
     } catch (error) {
         if (error.name === 'CastError') {
             return res.status(400).json({ message: 'ID inválido' });
@@ -36,7 +40,10 @@ async function addNewAuto(req, res) {
         });
 
         const savedAuto = await newAuto.save();
-        res.status(201).json({ message: 'Auto creado exitosamente', data: savedAuto });
+        res.status(201).json({ 
+            message: 'Auto creado exitosamente', 
+            data: { ...savedAuto.toObject(), id: savedAuto._id } 
+        });
     } catch (error) {
         if (error.name === 'ValidationError') {
             const messages = Object.values(error.errors).map(err => err.message);
@@ -62,7 +69,10 @@ async function updateAuto(req, res) {
 
         if (!updatedAuto) return res.status(404).json({ message: 'Auto no encontrado' });
 
-        res.json({ message: 'Auto actualizado exitosamente', data: updatedAuto });
+        res.json({ 
+            message: 'Auto actualizado exitosamente', 
+            data: { ...updatedAuto.toObject(), id: updatedAuto._id } 
+        });
     } catch (error) {
         if (error.name === 'CastError') {
             return res.status(400).json({ message: 'ID inválido' });
@@ -87,7 +97,7 @@ async function deleteAuto(req, res) {
 
         res.json({ 
             message: 'Auto eliminado exitosamente', 
-            data: deletedAuto 
+            data: { ...deletedAuto.toObject(), id: deletedAuto._id } 
         });
     } catch (error) {
         if (error.name === 'CastError') {
