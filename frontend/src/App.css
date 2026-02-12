@@ -170,6 +170,7 @@ form div {
 
 input[type="text"],
 input[type="number"],
+input[type="color"],
 textarea {
   width: 100%;
   padding: 8px 10px;
@@ -178,6 +179,12 @@ textarea {
   background: #fbfdff;
   box-sizing: border-box;
   font-size: 14px;
+}
+
+input[type="color"] {
+  height: 38px;
+  /* Give color input a decent height */
+  padding: 2px;
 }
 
 /* Buttons */
