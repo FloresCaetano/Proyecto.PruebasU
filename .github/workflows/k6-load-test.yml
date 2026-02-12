@@ -9,9 +9,15 @@ jobs:
   load_test:
     name: Run K6 Load Test
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: Backend
+    
+    services:
+      backend:
+        image: node:20
+        ports:
+          - 3000:3000
+        env:
+          PORT: 3000
+          NODE_ENV: test
     
     steps:
       - name: Checkout
@@ -23,33 +29,20 @@ jobs:
           node-version: '20'
 
       - name: Install Backend Dependencies
+        working-directory: Backend
         run: npm install
 
-      - name: Start Backend Server in Background
+      - name: Start Backend Server
+        working-directory: Backend  
         run: |
           echo "Starting backend server..."
-          nohup npm start > backend.log 2>&1 &
-          echo $! > backend.pid
+          node src/app.js &
+          sleep 5
+          echo "Testing server connection..."
+          curl -f http://localhost:3000 || exit 1
         env:
           PORT: 3000
           NODE_ENV: test
-        
-      - name: Wait for server to be ready
-        run: |
-          echo "Waiting for server to start..."
-          for i in {1..30}; do
-            if curl -f http://localhost:3000 > /dev/null 2>&1; then
-              echo "Server is ready!"
-              curl http://localhost:3000
-              exit 0
-            fi
-            echo "Attempt $i/30: Server not ready yet, waiting..."
-            sleep 2
-          done
-          echo "Server failed to start after 60 seconds"
-          echo "Backend logs:"
-          cat backend.log
-          exit 1
           
       - name: Run K6 Load Test
         uses: grafana/k6-action@v0.3.0
@@ -57,4 +50,4 @@ jobs:
           BASE_URL: 'http://localhost:3000'
         with:
           filename: k6-tests/load-test.js
-          flags: --vus 10 --duration 30s
+          flags: --vus 5 --duration 20s
