@@ -131,6 +131,7 @@ async function _clearConcesionarias() {
 module.exports = { 
     getAllConcesionarias,
     getConcesionariaById, 
+    addNewConcesionaria,
     updateConcesionaria, 
     deleteConcesionaria,
     _clearConcesionarias 
