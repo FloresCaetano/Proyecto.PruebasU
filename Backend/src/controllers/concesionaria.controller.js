@@ -8,8 +8,11 @@
 //    gerente
 // }
 
-const concesionarias = [];
-let concesionariaIdCounter = 1;
+const concesionarias = [
+    { id: 1, nombre: 'AutoVentas Central', direccion: 'Av. Amazonas 123', telefono: '0987654321', ciudad: 'Quito', gerente: 'Roberto Silva' },
+    { id: 2, nombre: 'Autos del Pacifico', direccion: 'Malecón 456', telefono: '0912345678', ciudad: 'Guayaquil', gerente: 'Patricia Ruiz' }
+];
+let concesionariaIdCounter = 100;
 
 // GET - Obtener todas las concesionarias
 function getAllConcesionarias(req, res) {

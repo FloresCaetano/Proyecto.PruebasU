@@ -1,5 +1,8 @@
-const clientes = [];
-let clienteIdCounter = 1;
+const clientes = [
+    { id: 1, nombre: 'Carlos Rodriguez', email: 'carlos@cliente.com', telefono: '5551234567', direccion: 'Calle 123', ciudad: 'Quito' },
+    { id: 2, nombre: 'Ana Martinez', email: 'ana@cliente.com', telefono: '5559876543', direccion: 'Av Principal 456', ciudad: 'Guayaquil' }
+];
+let clienteIdCounter = 100;
 
 function getAllClientes(req, res) {
     res.json({ message: 'Clientes obtenidos exitosamente', clientes });

@@ -1,5 +1,8 @@
-const vendedores = [];
-let vendorIdCounter = 1;
+const vendedores = [
+    { id: 1, name: 'Juan Perez', email: 'juan@empresa.com', telefono: '1234567890', comision: 5, codigoEmpleado: 'EMP001' },
+    { id: 2, name: 'Maria Lopez', email: 'maria@empresa.com', telefono: '0987654321', comision: 7, codigoEmpleado: 'EMP002' }
+];
+let vendorIdCounter = 100;
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegex = /^[0-9]{7,15}$/;

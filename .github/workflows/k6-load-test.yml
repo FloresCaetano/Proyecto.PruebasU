@@ -9,17 +9,37 @@ jobs:
   load_test:
     name: Run K6 Load Test
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Backend
     
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run K6 Local Test
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Backend Dependencies
+        run: npm install
+
+      - name: Start Backend Server
+        run: npm start &
+        env:
+          PORT: 3000
+        
+      - name: Wait for server to be ready
+        run: |
+          echo "Waiting for server to start..."
+          sleep 10
+          curl -f http://localhost:3000 || exit 1
+          
+      - name: Run K6 Load Test
         uses: grafana/k6-action@v0.3.0
         env:
-            # Reemplazar con la URL real si está en secrets, o usar una por defecto
-            BASE_URL: ${{ secrets.K6_BASE_URL || 'https://proyecto-pruebasu.vercel.app' }}
+          BASE_URL: 'http://localhost:3000'
         with:
           filename: k6-tests/load-test.js
-          flags: --vus 10 --duration 30s 
-          # Flags opcionales para sobreescribir opciones del script si se desea una prueba más ligera en CI
+          flags: --vus 10 --duration 30s

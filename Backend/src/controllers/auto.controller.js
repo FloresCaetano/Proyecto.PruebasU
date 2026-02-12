@@ -1,5 +1,8 @@
-const autos = [];
-let autoIdCounter = 1;
+const autos = [
+    { id: 1, marca: 'Toyota', modelo: 'Corolla', año: 2023, color: 'Blanco', numeroSerie: 'TOY001' },
+    { id: 2, marca: 'Honda', modelo: 'Civic', año: 2024, color: 'Negro', numeroSerie: 'HON001' }
+];
+let autoIdCounter = 100;
 const MAX_YEAR = new Date().getFullYear() + 1;
 
 function validateYear(año) {
