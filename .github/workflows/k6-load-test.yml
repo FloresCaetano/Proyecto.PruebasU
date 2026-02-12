@@ -1,0 +1,25 @@
+name: K6 Load Test
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  load_test:
+    name: Run K6 Load Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run K6 Local Test
+        uses: grafana/k6-action@v0.3.0
+        env:
+            # Reemplazar con la URL real si está en secrets, o usar una por defecto
+            BASE_URL: ${{ secrets.K6_BASE_URL || 'https://proyecto-pruebasu.vercel.app' }}
+        with:
+          filename: k6-tests/load-test.js
+          flags: --vus 10 --duration 30s 
+          # Flags opcionales para sobreescribir opciones del script si se desea una prueba más ligera en CI

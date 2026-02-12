@@ -27,6 +27,11 @@ describe('ClientesManager Component', () => {
 
         // Assert: Verificar sección de listado
         expect(screen.getByText(/Listado de Clientes/i)).toBeInTheDocument();
+
+        // Esperamos a que se termine de cargar (estado inicial vacío) para evitar warnings de 'act'
+        await waitFor(() => {
+            expect(screen.getByText(/No hay clientes registrados/i)).toBeInTheDocument();
+        });
     });
 
     // Test 2: Verificar el flujo de creación de un cliente (Act/Assert)
@@ -58,6 +63,8 @@ describe('ClientesManager Component', () => {
                 ciudad: 'Test City',
                 direccion: 'Test Address'
             });
+            // Esperar también a que se recarguen los clientes
+            expect(clienteService.obtenerTodosLosClientes).toHaveBeenCalledTimes(2); // 1 al inicio, 1 tras crear
         });
     });
 

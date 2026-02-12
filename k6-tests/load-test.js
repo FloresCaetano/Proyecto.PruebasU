@@ -1,9 +1,10 @@
 import http from 'k6/http';
 import { check, group, sleep } from 'k6';
 import { testVendorLifecycle } from './vendor_k6_test.js';
+import { testClienteLifecycle } from './cliente_k6_test.js';
 
 // Configurar URL Base - cambiar a la de producción al desplegar
-const BASE_URL = __ENV.BASE_URL || 'http://localhost:5001/concesionariapruebas/us-central1/api';
+const BASE_URL = __ENV.BASE_URL || 'http://localhost:5001/concesionariapruebas/us-central1';
 // Ajustar el puerto/path si pruebas local en functions
 
 export const options = {
@@ -50,7 +51,9 @@ export default function () {
     group('API Endpoints', function () {
         // 2. Obtener Autos
         const autosRes = http.get(`${BASE_URL}/api/autos`, { headers: authHeaders });
-        check(autosRes, { 'status is 200': (r) => r.status === 200 });
+        if (!check(autosRes, { 'status is 200': (r) => r.status === 200 })) {
+            console.error(`Get Autos failed: ${autosRes.status} ${autosRes.body}`);
+        }
         sleep(1);
 
         // 3. Ciclo de vida Vendedores (CRUD)
@@ -59,14 +62,17 @@ export default function () {
         });
         sleep(1);
 
-        // 4. Obtener Clientes
-        const clientesRes = http.get(`${BASE_URL}/api/clientes`, { headers: authHeaders });
-        check(clientesRes, { 'status is 200': (r) => r.status === 200 });
+        // 4. Ciclo de vida Clientes (CRUD)
+        group('Clientes Lifecycle', function () {
+            testClienteLifecycle(BASE_URL, { headers: authHeaders });
+        });
         sleep(1);
 
         // 5. Obtener Concesionarias
         const concesionariasRes = http.get(`${BASE_URL}/api/concesionarias`, { headers: authHeaders });
-        check(concesionariasRes, { 'status is 200': (r) => r.status === 200 });
+        if (!check(concesionariasRes, { 'status is 200': (r) => r.status === 200 })) {
+            console.error(`Get Concesionarias failed: ${concesionariasRes.status} ${concesionariasRes.body}`);
+        }
         sleep(1);
     });
 }
