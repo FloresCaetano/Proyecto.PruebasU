@@ -1,88 +1,110 @@
-const autos = [
-    { id: 1, marca: 'Toyota', modelo: 'Corolla', año: 2023, color: 'Blanco', numeroSerie: 'TOY001' },
-    { id: 2, marca: 'Honda', modelo: 'Civic', año: 2024, color: 'Negro', numeroSerie: 'HON001' }
-];
-let autoIdCounter = 100;
-const MAX_YEAR = new Date().getFullYear() + 1;
+const { Auto } = require('../models');
 
-function validateYear(año) {
-    const yearNum = Number(año);
-    return !isNaN(yearNum) && yearNum >= 1900 && yearNum <= MAX_YEAR ? yearNum : null;
-}
-
-function isSerieUnique(serie, excludeIndex = -1) {
-    return !autos.some((a, idx) => idx !== excludeIndex && a.numeroSerie === serie.toUpperCase());
-}
-
-function getAllAutos(req, res) {
-    res.json(autos);
-}
-
-function getAutoById(req, res) {
-    const { id } = req.params;
-    const auto = autos.find(a => a.id === Number(id));
-    if (!auto) return res.status(404).json({ message: 'Auto no encontrado' });
-    res.json(auto);
-}
-
-function addNewAuto(req, res) {
-    const { marca, modelo, año, color, numeroSerie } = req.body;
-    if (!marca || !modelo || !año || !color || !numeroSerie) {
-        return res.status(400).json({ message: 'Marca, Modelo, Año, Color y Número de Serie son requeridos' });
+async function getAllAutos(req, res) {
+    try {
+        const autos = await Auto.find();
+        res.json(autos);
+    } catch (error) {
+        res.status(500).json({ message: 'Error interno del servidor', error: error.message });
     }
-    const yearNum = validateYear(año);
-    if (!yearNum) return res.status(400).json({ message: 'Año debe ser un número válido entre 1900 y ' + MAX_YEAR });
-    if (!isSerieUnique(numeroSerie)) return res.status(400).json({ message: 'El número de serie ya existe' });
-
-    const newAuto = {
-        id: autoIdCounter++, marca: String(marca).trim(), modelo: String(modelo).trim(),
-        año: yearNum, color: String(color).trim(), numeroSerie: String(numeroSerie).trim().toUpperCase()
-    };
-    autos.push(newAuto);
-    res.status(201).json({ message: 'Auto creado exitosamente', data: newAuto });
 }
 
-function updateAuto(req, res) {
-    const { id } = req.params;
-    const { marca, modelo, año, color, numeroSerie } = req.body;
-    const i = autos.findIndex(a => a.id === Number(id));
-    if (i === -1) return res.status(404).json({ message: 'Auto no encontrado' });
-
-    if (año !== undefined) {
-        const yearNum = validateYear(año);
-        if (!yearNum) return res.status(400).json({ message: 'Año debe ser un número válido entre 1900 y ' + MAX_YEAR });
-        autos[i].año = yearNum;
+async function getAutoById(req, res) {
+    try {
+        const { id } = req.params;
+        const auto = await Auto.findById(id);
+        if (!auto) return res.status(404).json({ message: 'Auto no encontrado' });
+        res.json(auto);
+    } catch (error) {
+        if (error.name === 'CastError') {
+            return res.status(400).json({ message: 'ID inválido' });
+        }
+        res.status(500).json({ message: 'Error interno del servidor', error: error.message });
     }
-    if (numeroSerie !== undefined) {
-        if (!isSerieUnique(numeroSerie, i)) return res.status(400).json({ message: 'El número de serie ya existe' });
-        autos[i].numeroSerie = String(numeroSerie).trim().toUpperCase();
+}
+
+async function addNewAuto(req, res) {
+    try {
+        const { marca, modelo, año, color, numeroSerie } = req.body;
+        
+        const newAuto = new Auto({
+            marca,
+            modelo,
+            año,
+            color,
+            numeroSerie
+        });
+
+        const savedAuto = await newAuto.save();
+        res.status(201).json({ message: 'Auto creado exitosamente', data: savedAuto });
+    } catch (error) {
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({ message: messages.join(', ') });
+        }
+        if (error.code === 11000) {
+            return res.status(400).json({ message: 'El número de serie ya existe' });
+        }
+        res.status(500).json({ message: 'Error interno del servidor', error: error.message });
     }
-    if (marca !== undefined) autos[i].marca = String(marca).trim();
-    if (modelo !== undefined) autos[i].modelo = String(modelo).trim();
-    if (color !== undefined) autos[i].color = String(color).trim();
-    res.json({ message: 'Auto actualizado exitosamente', data: autos[i] });
 }
 
-// DELETE - Eliminar auto
-function deleteAuto(req, res) {
-    const { id } = req.params;
+async function updateAuto(req, res) {
+    try {
+        const { id } = req.params;
+        const updateData = req.body;
 
-    // Buscar y eliminar auto
-    const index = autos.findIndex(a => a.id === Number(id));
-    if (index === -1) return res.status(404).json({ message: 'Auto no encontrado' });
+        const updatedAuto = await Auto.findByIdAndUpdate(
+            id,
+            updateData,
+            { new: true, runValidators: true }
+        );
 
-    const deleted = autos.splice(index, 1);
+        if (!updatedAuto) return res.status(404).json({ message: 'Auto no encontrado' });
 
-    res.json({ 
-        message: 'Auto eliminado exitosamente', 
-        data: deleted[0] 
-    });
+        res.json({ message: 'Auto actualizado exitosamente', data: updatedAuto });
+    } catch (error) {
+        if (error.name === 'CastError') {
+            return res.status(400).json({ message: 'ID inválido' });
+        }
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({ message: messages.join(', ') });
+        }
+        if (error.code === 11000) {
+            return res.status(400).json({ message: 'El número de serie ya existe' });
+        }
+        res.status(500).json({ message: 'Error interno del servidor', error: error.message });
+    }
 }
 
-// Helper de pruebas: limpia el arreglo de autos 
+async function deleteAuto(req, res) {
+    try {
+        const { id } = req.params;
+        const deletedAuto = await Auto.findByIdAndDelete(id);
+
+        if (!deletedAuto) return res.status(404).json({ message: 'Auto no encontrado' });
+
+        res.json({ 
+            message: 'Auto eliminado exitosamente', 
+            data: deletedAuto 
+        });
+    } catch (error) {
+        if (error.name === 'CastError') {
+            return res.status(400).json({ message: 'ID inválido' });
+        }
+        res.status(500).json({ message: 'Error interno del servidor', error: error.message });
+    }
+}
+
+// Helper de pruebas: limpia la colección de autos 
 /* istanbul ignore next */
-function _clearAutos() {
-    autos.length = 0;
+async function _clearAutos() {
+    try {
+        await Auto.deleteMany({});
+    } catch (error) {
+        console.error('Error clearing autos:', error);
+    }
 }
 
 module.exports = { getAllAutos, getAutoById, addNewAuto, updateAuto, deleteAuto, _clearAutos };

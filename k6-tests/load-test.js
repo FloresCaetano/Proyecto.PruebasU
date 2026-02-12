@@ -4,23 +4,15 @@ import { testClienteLifecycle } from './cliente_k6_test.js';
 import { login } from './auth_k6.js';
 import { testAutos } from './autos_k6.js';
 import { testConcesionarias } from './concesionarias_k6.js';
+import { config } from './config.js';
 
-const BASE_URL = __ENV.BASE_URL || 'https://proyecto-pruebasu-production.up.railway.app';
+// Usar configuración centralizada
+const BASE_URL = config.baseUrl;
 
-export const options = {
-    stages: [
-        { duration: '30s', target: 5 },
-        { duration: '1m', target: 5 },
-        { duration: '10s', target: 0 },
-    ],
-    thresholds: {
-        http_req_duration: ['p(95)<500'],
-        http_req_failed: ['rate<0.01'],
-    },
-};
+export const options = config.loadTestOptions;
 
 export default function () {
-    const token = login(BASE_URL, 'admin@consecionaria.com', 'consesionariachida');
+    const token = login(BASE_URL, config.auth.adminEmail, config.auth.adminPassword);
 
     if (!token) {
         return;

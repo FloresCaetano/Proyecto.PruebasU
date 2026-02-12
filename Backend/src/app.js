@@ -1,13 +1,23 @@
 require('dotenv').config();
 const express = require('express');
+const database = require('./config/database');
 const autoRoutes = require('./routes/auto.routes');
 const vendorRoutes = require('./routes/vendor.route');
 const clienteRoutes = require('./routes/cliente.routes');
 const concesionariaRoutes = require('./routes/concesionaria.routes');
 const authRoutes = require('./routes/auth.routes');
 const { authMiddleware } = require('./middleware/authMiddleware');
+const { createDefaultAdmin } = require('./controllers/auth.controller');
 
 const app = express();
+
+// Conectar a MongoDB
+database.connect().then(() => {
+    // Crear datos iniciales después de conectar
+    createDefaultAdmin();
+}).catch(error => {
+    console.error('Error inicializando aplicación:', error);
+});
 
 // middlewares
 app.use((req, res, next) => {
@@ -23,7 +33,11 @@ app.use(express.json());
 
 // Agregada ruta raíz para estado / pruebas
 app.get('/', (req, res) => {
-    res.json({ message: 'API Concesionarias - Backend activo' });
+    res.json({ 
+        message: 'API Concesionarias - Backend activo',
+        database: database.getConnectionState() === 1 ? 'Conectado' : 'Desconectado',
+        timestamp: new Date().toISOString()
+    });
 });
 
 // Rutas de autenticación (sin protección)
@@ -44,6 +58,15 @@ app.use('/concesionarias', authMiddleware, concesionariaRoutes);
 // manejo simple de 404
 app.use((req, res) => {
     res.status(404).json({ message: 'Endpoint no encontrado' });
+});
+
+// Manejo de errores globales
+app.use((error, req, res, next) => {
+    console.error('Error no mannejado:', error);
+    res.status(500).json({ 
+        message: 'Error interno del servidor',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
 });
 
 // iniciar servidor si se ejecuta con `node app.js`

@@ -1,0 +1,37 @@
+services:
+  # Backend API Service
+  - type: web
+    name: concesionaria-api
+    env: node
+    plan: free
+    buildCommand: cd Backend && npm install
+    startCommand: cd Backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGO_URL
+        fromDatabase:
+          name: concesionaria-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+    healthCheckPath: /
+    
+  # Frontend Static Site
+  - type: web
+    name: concesionaria-frontend
+    env: static
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://concesionaria-api.onrender.com
+
+# Database (MongoDB) - Using external service
+databases:
+  - name: concesionaria-db
+    databaseName: concesionaria
+    user: concesionaria_user
